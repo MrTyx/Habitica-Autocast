@@ -6,6 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:clean": "rimraf build/*",
+    "build:copy": "",
     "build": ""
   },
   "repository": {
@@ -22,6 +23,7 @@
     "angular": "^1.6.4",
     "bootstrap": "^3.3.7",
     "colors": "^1.1.2",
+    "copyfiles": "^1.2.0",
     "font-awesome": "^4.7.0",
     "node-zip": "^1.1.1",
     "pug": "^2.0.0-rc.1",
