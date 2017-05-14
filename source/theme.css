@@ -9,22 +9,34 @@ html {
 body {
   margin: 0px;
   height: 100%;
-  background-color: #e1e5cb;
+  /*background-color: #670064;*/
+  background: linear-gradient(to bottom, rgba(143,192,169,1) 0%, rgba(104,176,171,1) 100%);
+}
+#app {
+  height: 100%;
 }
 
 /* THEME COLORS */
-.text-color-primary-light { color: #67d3ea; }
-.border-color-primary-light { border-color: #67d3ea; }
-.bg-color-primary-light { background-color: #67d3ea; }
+.text-color-primary-light { color: #FAF3DD; }
+.border-color-primary-light { border-color: #FAF3DD; }
+.bg-color-primary-light { background-color: #FAF3DD; }
 
-.text-color-primary-dark { color: #a7dbde; }
-.border-color-primary-dark { border-color: #a7dbde; }
-.bg-color-primary-dark { background-color: #a7dbde; }
+.text-color-primary-dark { color: #C8D5B9; }
+.border-color-primary-dark { border-color: #C8D5B9; }
+.bg-color-primary-dark { background-color: #C8D5B9; }
 
-.text-color-secondary-light { color: #f58630 }
-.border-color-secondary-light { border-color: #f58630 }
-.bg-color-secondary-light { background-color: #f58630 }
+.text-color-secondary-light { color: #fe510a }
+.border-color-secondary-light { border-color: #fe510a }
+.bg-color-secondary-light { background-color: #fe510a }
 
-.text-color-secondary-dark { color: #fb6800 }
-.border-color-secondary-dark { border-color: #fb6800 }
-.bg-color-secondary-dark { background-color: #fb6800 }
+.text-color-secondary-dark { color: #fd2322 }
+.border-color-secondary-dark { border-color: #fd2322 }
+.bg-color-secondary-dark { background-color: #fd2322 }
+
+/* HACK */
+.ui-switch__thumb {
+  z-index: 1;
+}
+.ui-switch__track {
+  z-index: 0
+}
