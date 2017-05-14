@@ -6,8 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build:clean": "rimraf build/*",
-    "build:copy": "copyfiles -u 1 source/manifest.json source/images/* build",
-    "build": ""
+    "build:copy": "copyfiles -u 1 source/manifest.json source/images/* source/scripts/*.js build",
+    "build:pug:main": "pug source/*.pug -o build/",
+    "build:pug:views": "pug source/views/*.pug -o build/views",
+    "build:pug": "npm run build:pug:main -s && npm run build:pug:views -s",
+    "prebuild": "npm run build:clean -s",
+    "build": "npm run build:copy -s && npm run build:pug -s"
   },
   "repository": {
     "type": "git",
