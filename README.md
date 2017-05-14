@@ -1,3 +1,3 @@
-# Habitica-Autocast
+# Habitica-MagicWand
 
 Test
