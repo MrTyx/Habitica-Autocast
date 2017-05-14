@@ -1,0 +1,28 @@
+{
+  "name": "habitica-magicwand",
+  "version": "1.0.0",
+  "description": "Test",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": ""
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/MrTyx/Habitica-Autocast.git"
+  },
+  "author": "MrTyx",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/MrTyx/Habitica-Autocast/issues"
+  },
+  "homepage": "https://github.com/MrTyx/Habitica-Autocast#readme",
+  "devDependencies": {
+    "angular": "^1.6.4",
+    "bootstrap": "^3.3.7",
+    "colors": "^1.1.2",
+    "font-awesome": "^4.7.0",
+    "pug": "^2.0.0-rc.1",
+    "pug-cli": "^1.0.0-alpha6"
+  }
+}
