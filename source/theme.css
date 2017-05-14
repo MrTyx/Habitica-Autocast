@@ -1,0 +1,30 @@
+/* HARD RESETS */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+html {
+  font-size: 100%;
+  height: 100%;
+}
+body {
+  margin: 0px;
+  height: 100%;
+  background-color: #e1e5cb;
+}
+
+/* THEME COLORS */
+.text-color-primary-light { color: #67d3ea; }
+.border-color-primary-light { border-color: #67d3ea; }
+.bg-color-primary-light { background-color: #67d3ea; }
+
+.text-color-primary-dark { color: #a7dbde; }
+.border-color-primary-dark { border-color: #a7dbde; }
+.bg-color-primary-dark { background-color: #a7dbde; }
+
+.text-color-secondary-light { color: #f58630 }
+.border-color-secondary-light { border-color: #f58630 }
+.bg-color-secondary-light { background-color: #f58630 }
+
+.text-color-secondary-dark { color: #fb6800 }
+.border-color-secondary-dark { border-color: #fb6800 }
+.bg-color-secondary-dark { background-color: #fb6800 }
