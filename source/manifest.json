@@ -1,0 +1,25 @@
+{
+  "manifest_version": 2,
+  "name": "Habitica Magic Wand",
+  "version": "3.2",
+  "description": "A collection of tools for Habitica",
+  "icons": {
+    "16": "images/icon16.png",
+    "24": "images/icon24.png",
+    "32": "images/icon32.png",
+    "64": "images/icon64.png",
+    "128": "images/icon128.png",
+    "256": "images/icon256.png",
+    "512": "images/icon512.png"
+  },
+  "browser_action": {
+    "default_popup": "popup.html"
+  },
+  "author": "MrTyx",
+  "options_page": "index.html",
+  "permissions": [
+    "<all_urls>",
+    "tabs",
+    "storage"
+  ]
+ }
