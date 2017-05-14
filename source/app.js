@@ -1,19 +1,21 @@
 import Vue from "vue";
-// import VueRouter from "vue-router";
 import KeenUI from "keen-ui";
-import app from "./app.vue";
 
-// Vue.use(VueRouter);
+import main from "./templates/main.vue";
+import login from "./templates/login.vue";
+
 Vue.use(KeenUI);
 
-// const routes = [{ path: "/", component: Hello }];
-//
-// const router = new VueRouter({
-//   routes, // short for routes: routes
-//   mode: "history"
-// });
-
-new Vue({
-  el: "#app",
-  render: h => h(app)
+chrome.storage.sync.get(["userID", "apiToken"], function(items) {
+  if (items.userID !== undefined) {
+    new Vue({
+      el: "#app",
+      render: h => h(main)
+    });
+  } else {
+    new Vue({
+      el: "#app",
+      render: h => h(login)
+    });
+  }
 });
