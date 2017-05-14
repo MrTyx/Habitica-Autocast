@@ -27,7 +27,7 @@
     }
   ],
   "author": "MrTyx",
-  "options_page": "index.html",
+  "options_page": "app.html",
   "permissions": [
     "<all_urls>",
     "tabs",
