@@ -15,7 +15,8 @@
         ui-tab(title="Randomize")
           option-row(name="randomizeMount", v-bind:enabled="randomizeMount", description="Randomize Mount")
           option-row(name="randomizePet", v-bind:enabled="randomizePet", description="Randomize Pet")
-        ui-tab(title="Youtube Playlist-er")
+        ui-tab(title="Youtube Playlist-er", selected=true)
+          youtube-playerlister
         ui-tab(title="Settings") favicon
 </template>
 
