@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Habitica Magic Wand",
-  "version": "3.2",
+  "version": "0.1",
   "description": "A collection of tools for Habitica",
   "icons": {
     "16": "images/icon16.png",
@@ -18,12 +18,8 @@
   "content_scripts": [
     {
       "run_at": "document_end",
-      "matches": [
-        "https://www.google.com.au/*"
-      ],
-      "js": [
-        "scripts/test.js"
-      ]
+      "matches": ["https://www.google.com.au/*"],
+      "js": ["content.min.js"]
     }
   ],
   "author": "MrTyx",

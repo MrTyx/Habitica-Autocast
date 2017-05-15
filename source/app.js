@@ -5,9 +5,12 @@ import VueAxios from "vue-axios";
 
 import main from "./templates/main.vue";
 import login from "./templates/login.vue";
+import optionRow from "./components/optionRow.vue";
 
 Vue.use(VueAxios, axios);
 Vue.use(KeenUI);
+
+Vue.component("option-row", optionRow);
 
 chrome.storage.sync.get(["userID", "apiToken"], function(items) {
   if (items.userID !== undefined && items.apiToken !== undefined) {

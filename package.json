@@ -4,11 +4,12 @@
   "description": "Test",
   "main": "app.js",
   "scripts": {
-    "build:copy": "copyfiles -u 1 source/manifest.json source/images/* source/scripts/*.js build",
-    "build:pug": "pug source/*.pug --out build/ --pretty",
-    "build:browserify": "cross-env NODE_ENV=production browserify -g envify source/app.js | uglifyjs -c warnings=false -m > build/app.min.js",
+    "build:copy": "copyfiles -u 1 source/manifest.json source/images/* source/content.js build",
+    "build:pug": "pug source/*.pug --out build/",
+    "build:app": "cross-env NODE_ENV=production browserify -g envify source/app.js | uglifyjs --compress warnings=false --mangle > build/app.min.js",
+    "build:content": "browserify source/content.js | uglifyjs --mangle > build/content.min.js",
     "prebuild": "rimraf build/*",
-    "build": "npm-run-all build:copy build:pug build:browserify"
+    "build": "npm-run-all build:copy build:pug build:app build:content"
   },
   "repository": {
     "type": "git",
