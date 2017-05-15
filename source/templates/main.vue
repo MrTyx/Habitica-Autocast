@@ -4,74 +4,73 @@
       ui-tabs(type="text", raised)
         ui-tab(title="Auto Actions")
           .block
-            div
-              option-row(
-                name="autolevel"
-                v-bind:enabled="autolevel"
-                description="Auto Level Up Stats")
+            option-row(
+              name="autoLevel"
+              v-bind:enabled="autoLevelEnable"
+              description="Allocate Stat Points"
+              subtitle="")
             .subblock
               ui-select(
                 :options="stats"
-                v-model="autolevelModel"
+                v-model="autoLevelModel"
                 @change="setAutolevel()")
-          hr
+
           .block
-            div
-              option-row(
-                name="autocast"
-                v-bind:enabled="autocast"
-                description="Autocast Spell"
-                subtitle="")
+            option-row(
+              name="autoCast"
+              v-bind:enabled="autoCastEnable"
+              description="Cast Spell"
+              subtitle="")
             .subblock
               ui-select(
                 :options="spells"
                 type="image"
-                v-model="autocastSpellModel"
+                v-model="autoCastSpellModel"
                 @change="setAutocastSpell()")
               ui-select(
                 :options="tasks",
-                v-model="autocastTaskModel"
+                v-model="autoCastTaskModel"
                 @change="setAutocastTask()")
-          hr
+
           .block
             option-row(
-              name="autobuyArmoire"
-              v-bind:enabled="autobuyArmoire"
+              name="autoGems"
+              v-bind:enabled="autoGemsEnable"
+              description="Buy Gems"
+              subtitle="To be implemented")
+
+          .block
+            option-row(
+              name="autoArmoire"
+              v-bind:enabled="autoArmoireEnable"
               description="Autobuy Enchanted Armoire")
-          hr
+
           .block
             option-row(
-              name="autobuyGems"
-              v-bind:enabled="autobuyGems"
-              description="Autobuy Gems"
+              name="autoFeed"
+              v-bind:enabled="autoFeedEnable"
+              description="Feed Pets"
               subtitle="To be implemented")
-          hr
+
           .block
             option-row(
-              name="autofeedPets"
-              v-bind:enabled="autofeedPets"
-              description="Autofeed Pets"
-              subtitle="To be implemented")
-          hr
-          .block
-            option-row(
-              name="autostartQuest"
-              v-bind:enabled="autostartQuest"
-              description="Autostart New Quest"
+              name="autoQuest"
+              v-bind:enabled="autoQuestEnable"
+              description="Start New Quest"
               subtitle="To be implemented")
 
         ui-tab(title="Randomizer")
           .block
             option-row(
               name="randomizeMount"
-              v-bind:enabled="randomizeMount"
+              v-bind:enabled="randomizeMountEnable"
               description="Randomize Mount"
               subtitle="To be implemented")
-          hr
+
           .block
             option-row(
               name="randomizePet"
-              v-bind:enabled="randomizePet"
+              v-bind:enabled="randomizePetEnable"
               description="Randomize Pet"
               subtitle="To be implemented")
         ui-tab(title="Youtube Playlist")
@@ -85,23 +84,18 @@ export default {
   name: "main",
   data() {
     return {
-      autolevel: false,
-      autolevelIndex: 0,
-      autolevelModel: {},
-      autocast: false,
-      autocastSpellModel: {},
-      autocastSpellIndex: 0,
-      autocastSpellValue: "",
-      autocastTaskModel: {},
-      autocastTaskLabel: "",
-      autocastTaskValue: "",
-      autobuyArmoire: false,
-      autobuyGems: false,
-      autofeedPets: false,
-      autostartQuest: false,
+      autoLevelEnable: false,
+      autoLevelModel: {},
+      autoCastEnable: false,
+      autoCastSpellModel: {},
+      autoCastTaskModel: {},
+      autoArmoireEnable: false,
+      autoGemsEnable: false,
+      autoFeedEnable: false,
+      autoQuestEnable: false,
 
-      randomizeMount: false,
-      randomizePet: false,
+      randomizeMountEnable: false,
+      randomizePetEnable: false,
       tasks: [],
       stats: [
         {
@@ -226,17 +220,12 @@ export default {
       [
         "userID",
         "apiToken",
-        "autolevel",
-        "autolevelIndex",
-        "autocast", // Boolean, do we autocast?
-        "autocastSpellIndex", // Location in spells array, eg 1
-        "autocastSpellValue", // Spell value used in url, eg fireball
-        "autocastTaskLabel", // String value in tasks array from axios req
-        "autobuyArmoire",
-        "autobuyGems",
-        "autofeedPets",
-        "autostartQuest",
-
+        "autoLevel",
+        "autoCast",
+        "autoArmoire",
+        "autoGems",
+        "autoFeed",
+        "autoQuest",
         "randomizeMount",
         "randomizePet"
       ],
@@ -249,52 +238,116 @@ export default {
               "x-api-key": items.apiToken
             }
           })
-          .then(response => {
-            for (let i = 0; i < response.data.data.length; i++) {
+          .then(res => {
+            for (let i = 0; i < res.data.data.length; i++) {
               this.tasks.push({
-                label: response.data.data[i].text,
-                value: response.data.data[i].id
+                label: res.data.data[i].text,
+                value: res.data.data[i].id
               });
-              if (response.data.data[i].text === this.autocastTaskLabel) {
-                this.autocastTaskModel = this.tasks[i];
+              if (res.data.data[i].text === items.autoCast.task.name) {
+                this.autoCastTaskModel = this.tasks[i];
               }
             }
           });
 
-        // Auto Level Stats
-        this.autolevel = items.autolevel ? true : false;
-        this.autolevelIndex = items.autolevelIndex;
-        this.autolevelModel = this.stats[items.autolevelIndex];
+        // Define schema for autoLevel object
+        if (items.autoLevel === undefined) {
+          items.autoLevel = {
+            enabled: false,
+            index: 0,
+            id: this.stats[0].value,
+            name: this.stats[0].label
+          };
+          chrome.storage.sync.set({ autoLevel: items.autoLevel });
+        }
 
-        // Auto Cast Spell
-        this.autocast = items.autocast ? true : false;
-        this.autocastSpellIndex = items.autocastSpellIndex;
-        this.autocastSpellModel = this.spells[items.autocastSpellIndex];
-        this.autocastSpellName = items.autocastSpellName || "";
-        this.autocastTaskLabel = items.autocastTaskLabel || "";
+        // Define schema for autoCast object
+        if (items.autoCast === undefined) {
+          items.autoCast = {
+            enabled: false,
+            spell: {},
+            task: {}
+          };
+          items.autoCast.spell = {
+            index: 1,
+            id: this.spells[1].value,
+            name: this.spells[1].label
+          };
+          items.autoCast.task = {
+            id: "",
+            name: ""
+          };
+          chrome.storage.sync.set({ autoCast: items.autoCast });
+        }
 
-        this.autobuyArmoire = items.autobuyArmoire ? true : false;
+        if (items.autoGems === undefined) {
+          items.autoGems = {
+            enabled: false
+          };
+          chrome.storage.sync.set({ autoGems: items.autoGems });
+        }
 
-        this.autobuyGems = items.autobuyGems ? true : false;
+        if (items.autoArmoire === undefined) {
+          items.autoArmoire = {
+            enabled: false
+          };
+          chrome.storage.sync.set({ autoArmoire: items.autoArmoire });
+        }
 
-        this.autofeedPets = items.autofeedPets ? true : false;
+        if (items.autoFeed === undefined) {
+          items.autoFeed = {
+            enabled: false
+          };
+          chrome.storage.sync.set({ autoFeed: items.autoFeed });
+        }
 
-        this.autostartQuest = items.autostartQuest ? true : false;
+        if (items.autoQuest === undefined) {
+          items.autoQuest = {
+            enabled: false
+          };
+          chrome.storage.sync.set({ autoQuest: items.autoQuest });
+        }
 
-        this.randomizeMount = items.randomizeMount ? true : false;
-        this.randomizePet = items.randomizePet ? true : false;
+        if (items.randomizeMount === undefined) {
+          items.randomizeMount = {
+            enabled: false
+          };
+          chrome.storage.sync.set({ randomizeMount: items.randomizeMount });
+        }
+
+        if (items.randomizePet === undefined) {
+          items.randomizePet = {
+            enabled: false
+          };
+          chrome.storage.sync.set({ randomizePet: items.randomizePet });
+        }
+
+        // Populate the switches
+        this.autoLevelEnable = items.autoLevel.enabled;
+        this.autoCastEnable = items.autoCast.enabled;
+        this.autoGemsEnable = items.autoGems.enabled;
+        this.autoArmoireEnable = items.autoArmoire.enabled;
+        this.autoFeedEnable = items.autoFeed.enabled;
+        this.autoQuestEnable = items.autoQuest.enabled;
+        this.randomizeMountEnable = items.randomizeMount.enabled;
+        this.randomizePetEnable = items.randomizePet.enabled;
+
+        // Populate the selects
+        this.autoLevelModel = this.stats[items.autoLevel.index];
+        this.autoCastSpellModel = this.spells[items.autoCast.spell.index];
       }
     );
   },
   methods: {
     setAutolevel() {
-      console.log(this.autolevelModel);
       for (let i = 0; i < this.stats.length; i++) {
-        if (this.stats[i].value === this.autolevelModel.value) {
-          this.autolevelIndex = i;
-          chrome.storage.sync.set({
-            autolevelIndex: i,
-            autolevelValue: this.autolevelModel.value
+        if (this.stats[i].value === this.autoLevelModel.value) {
+          chrome.storage.sync.get("autoLevel", obj => {
+            this.autoLevelEnable = obj.autoLevel.enabled;
+            obj.autoLevel.index = i;
+            obj.autoLevel.id = this.stats[i].value;
+            obj.autoLevel.name = this.stats[i].label;
+            chrome.storage.sync.set(obj);
           });
           return;
         }
@@ -302,21 +355,26 @@ export default {
     },
     setAutocastSpell() {
       for (let i = 0; i < this.spells.length; i++) {
-        if (this.spells[i].value === this.autocastSpellModel.value) {
-          this.autocastSpellIndex = i;
-          chrome.storage.sync.set({
-            autocastSpellIndex: i,
-            autocastSpellValue: this.autocastSpellModel.value
+        if (this.spells[i] === this.autoCastSpellModel) {
+          chrome.storage.sync.get("autoCast", obj => {
+            this.autoCastEnable = obj.autoCast.enabled;
+            obj.autoCast.spell.index = i;
+            obj.autoCast.spell.id = this.spells[i].value;
+            obj.autoCast.spell.name = this.spells[i].label;
+            chrome.storage.sync.set(obj);
           });
           return;
         }
       }
     },
     setAutocastTask() {
-      chrome.storage.sync.set({
-        autocastTaskLabel: this.autocastTaskModel.label,
-        autocastTaskValue: this.autocastTaskModel.value
+      chrome.storage.sync.get("autoCast", obj => {
+        this.autoCastEnable = obj.autoCast.enabled;
+        obj.autoCast.task.id = this.autoCastTaskModel.value;
+        obj.autoCast.task.name = this.autoCastTaskModel.label;
+        chrome.storage.sync.set(obj);
       });
+      return;
     }
   }
 };
@@ -332,6 +390,7 @@ export default {
 .block {
   background-color: #eee;
   padding: 10px 20px;
+  margin-bottom: 20px;
 }
 .subblock {
   margin-left: 50px;

@@ -14,9 +14,17 @@ module.exports = {
   methods: {
     change() {
       this.enabled = !this.enabled;
-      let temp = {};
-      temp[this.name] = this.enabled;
-      chrome.storage.sync.set(temp);
+      chrome.storage.sync.get(this.name, obj => {
+        let temp = {};
+        temp[this.name] = obj[this.name];
+        temp[this.name].enabled = this.enabled;
+        chrome.storage.sync.set(temp);
+      });
+      //- let temp = {};
+      //- temp[this.name] = {
+      //-   enabled: this.enabled
+      //- };
+      //- chrome.storage.sync.set(temp);
     }
   }
 };

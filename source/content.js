@@ -2,74 +2,71 @@ import * as axios from "axios";
 
 let apiToken;
 let userID;
-
 let userData;
 let userOptions;
 let headers;
 
 let process = () => {
-  console.log(userOptions);
-  if (userOptions.autolevel) autolevel();
-  if (userOptions.autocast) castSpell();
+  if (userOptions.autoLevel.enabled) autoLevel();
+  if (userOptions.autoCast.enabled) autoCast();
+  if (userOptions.autoGems.enabled) autoGems();
+  if (userOptions.autoArmoire.enabled) autoArmoire();
+  if (userOptions.autoFeed.enabled) autoFeed();
+  if (userOptions.autoQuest.enabled) autoQuest();
   if (userOptions.autobuyArmoire && userData.stats.gp > 100) buyArmoire();
 };
 
-//
-let autolevel = () => {
-  if (userData.stats.points === 0) return;
-  if (userOptions.autolevelValue === undefined) return;
-  let url = `https://habitica.com/api/v3/user/allocate?stat=${userOptions.autolevelValue}`;
-  axios.post(url, {}, { headers }).then(response => {
-    if (response.status === 200) {
-      userData.stats.points--;
-      if (userData.stats.points > 0) autolevel();
-    }
-  }, console.log);
-};
-
-let castSpell = () => {
-  // Well this is annoying. We have to do manual string concat because axios
-  // is mutating the params string somehow and I can't quite diagnose it
-  if (userOptions.autocastSpellValue === undefined) return;
-  let url = `https://habitica.com/api/v3/user/class/cast/${userOptions.autocastSpellValue}`;
-  if (userOptions.autocastTaskValue) {
-    url = `${url}?targetId=${userOptions.autocastTaskValue}`;
-  }
-  axios.post(url, {}, { headers }).then(response => {
-    if (response.status === 200) castSpell();
-  }, console.log);
-};
-
-let buyGem = () => {};
-
-let buyArmoire = () => {
+let autoArmoire = () => {
   axios
     .post("https://habitica.com/api/v3/user/buy-armoire", {}, { headers })
-    .then(response => {
-      console.log("buyArmoire", response);
-      if (response.status === 200) {
+    .then(res => {
+      if (res.status === 200) {
         userData.stats.gp -= 100;
         if (userData.stats.gp > 300) {
-          buyArmoire();
+          autoArmoire();
         }
       }
     });
+};
+
+let autoCast = () => {
+  // Well this is annoying. We have to do manual string concat because axios
+  // is mutating the params string somehow and I can't quite diagnose it
+  if (userOptions.autoCast.spell.id === undefined) return;
+  let url = `https://habitica.com/api/v3/user/class/cast/${userOptions.autocastSpellValue}`;
+  if (userOptions.autoCast.task.id) {
+    url = `${url}?targetId=${userOptions.autocastTaskValue}`;
+  }
+  axios.post(url, {}, { headers }).then(res => {
+    if (res.status === 200) autoCast();
+  }, console.log);
+};
+
+let autoFeed = () => {};
+
+let autoGems = () => {};
+
+let autoLevel = () => {
+  if (userData.stats.points === 0) return;
+  let url = `https://habitica.com/api/v3/user/allocate?stat=${userOptions.autoLevel.id}`;
+  axios.post(url, {}, { headers }).then(res => {
+    if (res.status === 200) {
+      userData.stats.points--;
+      if (userData.stats.points > 0) autoLevel();
+    }
+  }, console.log);
 };
 
 chrome.storage.sync.get(
   [
     "userID",
     "apiToken",
-    "autolevel",
-    "autolevelValue",
-    "autocast",
-    "autocastSkillName",
-    "autocastTaskID",
-    "autobuyArmoire",
-    "autobuyGems",
-    "autofeedPets",
-    "autostartQuest",
-    "autolevelStats",
+    "autoArmoire",
+    "autoCast",
+    "autoFeed",
+    "autoGems",
+    "autoLevel",
+    "autoQuest",
     "randomizeMount",
     "randomizePet"
   ],
