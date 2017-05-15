@@ -70,6 +70,14 @@ module.exports = {
             if (res.nextPageToken !== undefined) {
               opts.pageToken = res.nextPageToken;
               process(res.nextPageToken);
+            } else {
+              // Cause we programmatically set the textarea, we have to trigger the
+              // resize event so it knows whats up. But for some reason, we have to
+              // wait a second. See the below link
+              //  https://github.com/JosephusPaye/Keen-UI/issues/303
+              setTimeout(() => {
+                this.$refs.textarea.refreshSize();
+              }, 1000);
             }
           });
         });
@@ -77,14 +85,6 @@ module.exports = {
 
       gapi.client.setApiKey("AIzaSyDXaxjq4Vu38QQ7gtJdVjxLlmaoyhnxeIo");
       process();
-
-      // Cause we programmatically set the textarea, we have to trigger the
-      // resize event so it knows whats up. But for some reason, we have to
-      // wait a second. See the below link
-      //  https://github.com/JosephusPaye/Keen-UI/issues/303
-      setTimeout(() => {
-        this.$refs.textarea.refreshSize();
-      }, 1000);
     }
   }
 };

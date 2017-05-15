@@ -19,7 +19,7 @@
   "content_scripts": [
     {
       "run_at": "document_end",
-      "matches": ["https://www.google.com.au/*"],
+      "matches": ["https://habitica.com/"],
       "js": ["content.min.js"]
     }
   ],

@@ -4,13 +4,13 @@
       v-model="this.enabled",
       @change="change()"
     ) {{ this.description }}
-      span.subtitle Test
+      span.subtitle {{ this.subtitle }}
 
 </template>
 
 <script>
 module.exports = {
-  props: ["name", "enabled", "description"],
+  props: ["name", "enabled", "description", "subtitle"],
   methods: {
     change() {
       this.enabled = !this.enabled;
