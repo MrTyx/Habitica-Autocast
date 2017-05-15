@@ -77,6 +77,7 @@
           .block
             youtube-playerlister
         ui-tab(title="About") To be done
+      hr
 </template>
 
 <script>
