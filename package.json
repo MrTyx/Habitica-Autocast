@@ -9,7 +9,8 @@
     "build:app": "cross-env NODE_ENV=production browserify -g envify source/app.js | uglifyjs --compress warnings=false --mangle > build/app.min.js",
     "build:content": "browserify source/content.js | uglifyjs --mangle > build/content.min.js",
     "prebuild": "rimraf build/*",
-    "build": "npm-run-all build:copy build:pug build:app build:content"
+    "build": "npm-run-all build:copy build:pug build:app build:content",
+    "deploy": "npm run build && nodezip -c deploy.zip build/"
   },
   "repository": {
     "type": "git",
@@ -30,6 +31,7 @@
     "cross-env": "^5.0.0",
     "envify": "^4.0.0",
     "node-zip": "^1.1.1",
+    "npm-run-all": "^4.0.2",
     "pug": "^2.0.0-rc.1",
     "pug-cli": "^1.0.0-alpha6",
     "rimraf": "^2.6.1",
