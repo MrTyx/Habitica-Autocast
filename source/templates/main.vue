@@ -43,7 +43,7 @@
             option-row(
               name="autoArmoire"
               v-bind:enabled="autoArmoireEnable"
-              description="Autobuy Enchanted Armoire")
+              description="Buy Enchanted Armoire")
 
           .block
             option-row(
