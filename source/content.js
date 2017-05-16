@@ -69,7 +69,7 @@ let autoLevel = () => {
     if (res.status === 200) {
       console.log(`Allocated Stat Point to ${userOptions.autoLevel.name}`);
       userData.stats.points--;
-      if (userData.stats.points > 0) autoLevel();
+      autoLevel();
     }
   }, console.log);
 };
