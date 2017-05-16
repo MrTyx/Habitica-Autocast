@@ -50,7 +50,17 @@ let autoCast = () => {
 
 let autoFeed = () => {};
 
-let autoGems = () => {};
+let autoGems = () => {
+  if (userData.stats.gp < 20) return;
+  let url = `https://habitica.com/api/v3/user/purchase/gems/gem`;
+  axios.post(url, {}, { headers }).then(res => {
+    if (res.status === 200) {
+      console.log(`Bought a gem`);
+      userData.stats.gp -= 20;
+      autoGems();
+    }
+  });
+};
 
 let autoLevel = () => {
   if (userData.stats.points === 0) return;
