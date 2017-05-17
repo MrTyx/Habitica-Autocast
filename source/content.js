@@ -213,8 +213,8 @@ const autoQuest = async function() {
     return;
   }
   const quests = userData.items.quests;
-  const groupID = userData.party[_id];
-  const keys = Object.keys(quest).filter(k => quests[k] > 0);
+  const groupID = userData.party["_id"];
+  const keys = Object.keys(quests).filter(k => quests[k] > 0);
   const key = keys[Math.floor(Math.random() * keys.length)];
   const url = `https://habitica.com/api/v3/groups/${groupID}/quests/invite/${key}`;
   try {

@@ -1,16 +1,18 @@
 <template lang="pug">
   #app
     #wrapper
-      ui-tabs(type="text", raised)
-        ui-tab(title="Auto Actions")
+      ui-tabs(type="icon-and-text", raised)
+        ui-tab(title="Auto Actions", icon="history")
           .block
             option-row(
+              icon="sync"
               name="autoLevel"
               v-bind:enabled="autoLevelEnable"
               description="Allocate Stat Points"
               subtitle="")
             .subblock
               ui-select(
+                icon="control_point"
                 :options="stats"
                 v-model="autoLevelModel"
                 @change="setAutolevel()")
@@ -23,11 +25,13 @@
               subtitle="")
             .subblock
               ui-select(
+                icon="whatsnow"
                 :options="spells"
                 type="image"
                 v-model="autoCastSpellModel"
                 @change="setAutocastSpell()")
               ui-select(
+                icon="games"
                 :options="tasks",
                 v-model="autoCastTaskModel"
                 @change="setAutocastTask()")
@@ -76,11 +80,11 @@
               subtitle="")
 
           hr
-        ui-tab(title="Youtube Playlist")
+        ui-tab(title="Youtube Playlist", icon="play_circle_outline")
           .block
             youtube-playerlister
           hr
-        ui-tab(title="About") To be done
+        ui-tab(title="About", icon="help_outline") To be done
           hr
 </template>
 
