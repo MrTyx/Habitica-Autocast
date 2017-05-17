@@ -54,6 +54,14 @@ const process = async function() {
     log("process", `autoQuest`);
     await autoQuest();
   }
+  if (userOptions.randomizeMount && userOptions.randomizeMount.enabled) {
+    log("process", `randomizeMount`);
+    await randomizeMount();
+  }
+  if (userOptions.randomizePet && userOptions.randomizePet.enabled) {
+    log("process", `randomizePet`);
+    await randomizePet();
+  }
 };
 
 const autoArmoire = async function() {
@@ -199,6 +207,40 @@ const autoLevel = async function() {
   return;
 };
 
+const randomizeMount = async function() {
+  const mounts = userData.items.mounts;
+  const keys = Object.keys(mounts).filter(k => mounts[k]);
+  //http://stackoverflow.com/a/5915122
+  const key = keys[Math.floor(Math.random() * keys.length)];
+  const url = `https://habitica.com/api/v3/user/equip/mount/${key}`;
+  try {
+    const response = await axios.post(url, {}, { headers });
+    if (response.status === 200) {
+      log("randomizeMount", `Changed mount to ${key}`);
+    }
+  } catch (e) {
+    log("randomizeMount", e.message);
+  }
+  return;
+};
+
+const randomizePet = async function() {
+  const pets = userData.items.pets;
+  const keys = Object.keys(pets).filter(k => userData.items.pets[k] !== -1);
+  //http://stackoverflow.com/a/5915122
+  const key = keys[Math.floor(Math.random() * keys.length)];
+  const url = `https://habitica.com/api/v3/user/equip/pet/${key}`;
+  try {
+    const response = await axios.post(url, {}, { headers });
+    if (response.status === 200) {
+      log("randomizePet", `Changed pet to ${key}`);
+    }
+  } catch (e) {
+    log("randomizePet", e.message);
+  }
+  return;
+};
+
 chrome.storage.sync.get(
   [
     "userID",
@@ -225,16 +267,13 @@ chrome.storage.sync.get(
       "x-api-key": apiToken
     };
 
-    try {
-      const response = axios.get("https://habitica.com/api/v3/user", {
-        headers
+    axios
+      .get("https://habitica.com/api/v3/user", { headers })
+      .then(response => {
+        if (response.status === 200) {
+          userData = response.data.data;
+          process();
+        }
       });
-      if (response.status === 200) {
-        userData = response.data.data;
-        process();
-      }
-    } catch (e) {
-      log("main", e.message);
-    }
   }
 );

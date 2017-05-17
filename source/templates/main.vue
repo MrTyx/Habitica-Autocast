@@ -66,15 +66,15 @@
               name="randomizeMount"
               v-bind:enabled="randomizeMountEnable"
               description="Randomize Mount"
-              subtitle="To be implemented")
+              subtitle="")
 
           .block
             option-row(
               name="randomizePet"
               v-bind:enabled="randomizePetEnable"
               description="Randomize Pet"
-              subtitle="To be implemented")
-              
+              subtitle="")
+
           hr
         ui-tab(title="Youtube Playlist")
           .block
