@@ -37,20 +37,21 @@
               name="autoGems"
               v-bind:enabled="autoGemsEnable"
               description="Buy Gems"
-              subtitle="To be implemented")
+              subtitle="")
 
           .block
             option-row(
               name="autoArmoire"
               v-bind:enabled="autoArmoireEnable"
-              description="Buy Enchanted Armoire")
+              description="Buy Enchanted Armoire"
+              subtitle="")
 
           .block
             option-row(
               name="autoFeed"
               v-bind:enabled="autoFeedEnable"
               description="Feed Pets"
-              subtitle="To be implemented")
+              subtitle="")
 
           .block
             option-row(
