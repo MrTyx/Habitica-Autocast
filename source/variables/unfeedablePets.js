@@ -1,0 +1,23 @@
+export const unfeedablePets = [
+  "Turkey-Base",
+  "Mammoth-Base",
+  "MantisShrimp-Base",
+  "Phoenix-Base",
+  "MagicalBee-Base",
+  "Wolf-Veteran",
+  "Wolf-Cerberus",
+  "Dragon-Hydra",
+  "Turkey-Base",
+  "BearCub-Polar",
+  "MantisShrimp-Base",
+  "JackOLantern-Base",
+  "Mammoth-Base",
+  "Tiger-Veteran",
+  "Phoenix-Base",
+  "Turkey-Gilded",
+  "MagicalBee-Base",
+  "Lion-Veteran",
+  "Gryphon-RoyalPurple",
+  "JackOLantern-Ghost",
+  "Jackalope-RoyalPurple"
+];

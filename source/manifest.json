@@ -19,7 +19,7 @@
   "content_scripts": [
     {
       "run_at": "document_end",
-      "matches": ["https://habitica.com/"],
+      "matches": ["https://www.habitica.com/*"],
       "js": ["content.min.js"]
     }
   ],

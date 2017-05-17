@@ -7,7 +7,7 @@
     "prebuild": "rimraf build/*",
     "build:copy": "copyfiles -u 1 source/manifest.json source/images/* build",
     "build:pug": "pug source/*.pug --out build/",
-    "build:app": "cross-env NODE_ENV=production browserify -g envify source/app.js | uglifyjs --compress warnings=false --mangle > build/app.min.js",
+    "build:app": "cross-env NODE_ENV=production browserify -g envify source/app.js -t babelify | uglifyjs --compress warnings=false --mangle > build/app.min.js",
     "build:content": "browserify source/content.js | uglifyjs --mangle > build/content.min.js",
     "build": "npm-run-all build:copy build:pug build:app build:content",
     "predeploy": "rimraf deploy.zip && npm run build",
@@ -25,6 +25,9 @@
   "homepage": "https://github.com/MrTyx/Habitica-MagicWand#readme",
   "devDependencies": {
     "babel-core": "^6.24.1",
+    "babel-loader": "^7.0.0",
+    "babel-plugin-syntax-async-functions": "^6.13.0",
+    "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^7.3.0",
     "browserify": "^14.3.0",
@@ -35,6 +38,7 @@
     "npm-run-all": "^4.0.2",
     "pug": "^2.0.0-rc.1",
     "pug-cli": "^1.0.0-alpha6",
+    "regenerator-runtime": "^0.10.5",
     "rimraf": "^2.6.1",
     "uglify-js": "^3.0.4",
     "vueify": "^9.4.1"

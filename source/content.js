@@ -1,77 +1,202 @@
 import * as axios from "axios";
+import regeneratorRuntime from "regenerator-runtime";
+import { foodLookup } from "./variables/foodLookup.js";
+import { petSuffix } from "./variables/petSuffix.js";
+import { unfeedablePets } from "./variables/unfeedablePets.js";
 
 let apiToken;
 let userID;
 let userData;
 let userOptions;
 let headers;
+const debug = true;
 
-let process = () => {
-  console.log(userOptions);
-  if (userOptions.autoLevel && userOptions.autoLevel.enabled) autoLevel();
-  if (userOptions.autoCast && userOptions.autoCast.enabled) autoCast();
-  if (userOptions.autoGems && userOptions.autoGems.enabled) autoGems();
-  if (userOptions.autoArmoire && userOptions.autoArmoire.enabled) autoArmoire();
-  if (userOptions.autoFeed && userOptions.autoFeed.enabled) autoFeed();
-  if (userOptions.autoQuest && userOptions.autoQuest.enabled) autoQuest();
+const log = (caller, message) => {
+  if (!debug) return;
+  const titleStyle = "color: red; font-weight: bold";
+  const callerStyle = "color: green; font-weight: bold";
+  const messageStyle = "color: black";
+  console.log(
+    "%c%s%c%s%c%s%c%s",
+    titleStyle,
+    "Magic Wand (",
+    callerStyle,
+    caller,
+    titleStyle,
+    ") ",
+    messageStyle,
+    message
+  );
 };
 
-let autoArmoire = () => {
-  if (user.stats.gp < 100) return;
-  axios
-    .post("https://habitica.com/api/v3/user/buy-armoire", {}, { headers })
-    .then(res => {
-      if (res.status === 200) {
-        console.log("Bought Armoire");
-        userData.stats.gp -= 100;
-        autoArmoire();
-      }
-    });
+const process = async function() {
+  if (userOptions.autoLevel && userOptions.autoLevel.enabled) {
+    log("process", `autoLevel`);
+    await autoLevel();
+  }
+  if (userOptions.autoCast && userOptions.autoCast.enabled) {
+    log("process", `autoCast`);
+    await autoCast();
+  }
+  if (userOptions.autoGems && userOptions.autoGems.enabled) {
+    log("process", `autoGems`);
+    await autoGems();
+  }
+  if (userOptions.autoArmoire && userOptions.autoArmoire.enabled) {
+    log("process", `autoArmoire`);
+    await autoArmoire();
+  }
+  if (userOptions.autoFeed && userOptions.autoFeed.enabled) {
+    log("process", `autoFeed`);
+    await autoFeed();
+  }
+  if (userOptions.autoQuest && userOptions.autoQuest.enabled) {
+    log("process", `autoQuest`);
+    await autoQuest();
+  }
 };
 
-let autoCast = () => {
-  // Well this is annoying. We have to do manual string concat because axios
-  // is mutating the params string somehow and I can't quite diagnose it
-  if (userOptions.autoCast.spell.id === undefined) {
-    console.log("No spell ID set, exiting");
+const autoArmoire = async function() {
+  if (userData.stats.gp < 100) {
+    log("autoArmoire", `Exiting with GP of ${user.stats.gp}`);
+    return;
+  }
+  const url = `https://habitica.com/api/v3/user/buy-armoire`;
+  try {
+    const response = await axios.post(url, {}, { headers });
+    if (response.status === 200) {
+      log("autoArmoire", "Bought Enchanted Armoire");
+      userData.stats.gp -= 100;
+      await autoArmoire();
+    }
+  } catch (e) {
+    log("autoArmoire", e.message);
+  }
+  return;
+};
+
+const autoCast = async function() {
+  if (userOptions.autoCast.spell.cost > userData.stats.mp) {
+    log("autoCast", "Exiting with insufficient mana");
     return;
   }
   let url = `https://habitica.com/api/v3/user/class/cast/${userOptions.autoCast.spell.id}`;
   if (userOptions.autoCast.task.id) {
     url = `${url}?targetId=${userOptions.autoCast.task.id}`;
   }
-  axios.post(url, {}, { headers }).then(res => {
-    if (res.status === 200) {
-      console.log(`Cast ${userOptions.autoCast.spell.name}`);
-      autoCast();
+  try {
+    const response = await axios.post(url, {}, { headers });
+    if (response.status === 200) {
+      log("autoCast", `Cast ${userOptions.autoCast.spell.name}`);
+      await autoCast();
     }
-  }, console.log);
+  } catch (e) {
+    log("autoCast", e.message);
+  }
+  return;
 };
 
-let autoFeed = () => {};
+const autoFeed = async function() {
+  let foods = userData.items.food;
+  let mounts = Object.keys(userData.items.mounts).filter(
+    k => userData.items.mounts[k]
+  );
 
-let autoGems = () => {
-  if (userData.stats.gp < 20) return;
-  let url = `https://habitica.com/api/v3/user/purchase/gems/gem`;
-  axios.post(url, {}, { headers }).then(res => {
-    if (res.status === 200) {
-      console.log(`Bought a gem`);
-      userData.stats.gp -= 20;
-      autoGems();
-    }
+  Object.keys(userData.items.pets)
+    .filter(k => userData.items.pets[k] !== -1)
+    .filter(k => mounts.indexOf(k) === -1)
+    .filter(k => unfeedablePets.indexOf(k) === -1)
+    .forEach(k => {
+      let i = k.indexOf("-");
+      if (i === -1) return;
+      let suffix = k.substring(i + 1);
+      if (petSuffix[suffix] === undefined) return;
+      petSuffix[suffix].pets[k] = userData.items.pets[k];
+    });
+
+  Object.keys(foods).filter(k => foods[k] > 0).forEach(key => {
+    let s = foodLookup[key];
+    if (s !== undefined) petSuffix[s].foods[key] = foods[key];
   });
+
+  // console.log(JSON.stringify(petSuffix, null, 2));
+  const feed = async function(food, pet) {
+    const url = `https://habitica.com/api/v3/user/feed/${pet}/${food}`;
+    const response = await axios.post(url, {}, { headers });
+    return response;
+  };
+
+  Object.keys(petSuffix).forEach(s => {
+    if (petSuffix[s].pets.length === 0) return;
+    if (petSuffix[s].foods.length === 0) return;
+
+    let pets = Object.keys(petSuffix[s].pets);
+
+    Object.keys(petSuffix[s].foods).forEach(async function(food) {
+      let n = pets.length;
+      let go = !(n === 0);
+      while (go) {
+        try {
+          const response = await feed(food, pets[n - 1]);
+          if (response.status === 200) {
+            log("autoFeed", `Feed ${food} to ${pets[n - 1]}`);
+            petSuffix[s].pets[pets[n - 1]] += 5;
+            petSuffix[s].foods[food]--;
+            if (petSuffix[s].pets[pets[n - 1]] >= 50) {
+              pets.pop();
+              n--;
+            }
+            go = !(petSuffix[s].foods[food] <= 0 || pets.length <= 0);
+          }
+        } catch (e) {
+          log(
+            "autoFeed",
+            `Tried to feed ${food} to ${pets[n - 1]}, got error ${response}`
+          );
+          go = false;
+        }
+      }
+    });
+  });
+  return;
 };
 
-let autoLevel = () => {
-  if (userData.stats.points === 0) return;
-  let url = `https://habitica.com/api/v3/user/allocate?stat=${userOptions.autoLevel.id}`;
-  axios.post(url, {}, { headers }).then(res => {
-    if (res.status === 200) {
-      console.log(`Allocated Stat Point to ${userOptions.autoLevel.name}`);
-      userData.stats.points--;
-      autoLevel();
+const autoGems = async function() {
+  if (userData.stats.gp < 20) {
+    log("autoGems", `Exiting with GP of ${user.stats.gp}`);
+    return;
+  }
+  const url = `https://habitica.com/api/v3/user/purchase/gems/gem`;
+  try {
+    const response = await axios.post(url, {}, { headers });
+    if (response.status === 200) {
+      log("autoGems", "Bought a gem");
+      userData.stats.gp -= 20;
+      await autoGems();
     }
-  }, console.log);
+  } catch (e) {
+    log("autoGems", e.message);
+  }
+  return;
+};
+
+const autoLevel = async function() {
+  if (userData.stats.points === 0) {
+    log("autoLevel", "Exiting with no available stat points");
+    return;
+  }
+  const url = `https://habitica.com/api/v3/user/allocate?stat=${userOptions.autoLevel.id}`;
+  try {
+    const response = await axios.post(url, {}, { headers });
+    if (response.status === 200) {
+      log("autoLevel", `Allocated Stat Point to ${userOptions.autoLevel.name}`);
+      userData.stats.points--;
+      await autoLevel();
+    }
+  } catch (e) {
+    log("autoLevel", e.message);
+  }
+  return;
 };
 
 chrome.storage.sync.get(
@@ -91,20 +216,25 @@ chrome.storage.sync.get(
     userID = items.userID;
     apiToken = items.apiToken;
     if (userID === undefined || apiToken === undefined) {
-      console.log("No User ID and/or API Token, exiting.");
+      log("Main", "Exiting with no User ID and/or API Token");
       return;
     }
-
     userOptions = items;
     headers = {
       "x-api-user": userID,
       "x-api-key": apiToken
     };
-    axios
-      .get("https://habitica.com/api/v3/user", { headers })
-      .then(response => {
+
+    try {
+      const response = axios.get("https://habitica.com/api/v3/user", {
+        headers
+      });
+      if (response.status === 200) {
         userData = response.data.data;
         process();
-      });
+      }
+    } catch (e) {
+      log("main", e.message);
+    }
   }
 );
