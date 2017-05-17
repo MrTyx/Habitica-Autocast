@@ -207,6 +207,27 @@ const autoLevel = async function() {
   return;
 };
 
+const autoQuest = async function() {
+  if (userData.party.quest.key !== null) {
+    log("autoQuest", "Exiting with active quest");
+    return;
+  }
+  const quests = userData.items.quests;
+  const groupID = userData.party[_id];
+  const keys = Object.keys(quest).filter(k => quests[k] > 0);
+  const key = keys[Math.floor(Math.random() * keys.length)];
+  const url = `https://habitica.com/api/v3/groups/${groupID}/quests/invite/${key}`;
+  try {
+    const response = await axios.post(url, {}, { headers });
+    if (response.status === 200) {
+      log("autoQuest", `Started quest ${key}`);
+    }
+  } catch (e) {
+    log("autoQuest", e.message);
+  }
+  return;
+};
+
 const randomizeMount = async function() {
   const mounts = userData.items.mounts;
   const keys = Object.keys(mounts).filter(k => mounts[k]);
@@ -226,7 +247,7 @@ const randomizeMount = async function() {
 
 const randomizePet = async function() {
   const pets = userData.items.pets;
-  const keys = Object.keys(pets).filter(k => userData.items.pets[k] !== -1);
+  const keys = Object.keys(pets).filter(k => pets[k] !== -1);
   //http://stackoverflow.com/a/5915122
   const key = keys[Math.floor(Math.random() * keys.length)];
   const url = `https://habitica.com/api/v3/user/equip/pet/${key}`;
