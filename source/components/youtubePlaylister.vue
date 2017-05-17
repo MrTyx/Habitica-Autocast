@@ -1,30 +1,49 @@
 <template lang="pug">
   #app
-    ui-textbox(
-      floating-label
-      label="Playlist URL"
-      v-model="playlistURL"
-    )
-    ui-textbox(
-      disabled
-      floating-label
-      label="Playlist ID (computed)"
-      v-model="playlistId"
-    )
-    ui-button(
-      raised
-      :size="large"
-      :loading="loading"
-      color="primary"
-      @click="request()"
-    )#request REQUEST
-    hr
-    ui-textbox(
-      :multi-line="true"
-      autosize="true"
-      v-model="playlistString"
-      ref="textarea"
-    )
+    .block.block-margin-bottom
+      span.title Playlist URL
+      ui-textbox(
+        placeholder="https://www.youtube.com/playlist?list=PLAYLIST_ID"
+        icon="play_circle_outline"
+        v-model="playlistURL"
+      )
+      ui-textbox(
+        disabled
+        placeholder="PLAYLIST_ID"
+        icon="label_outline"
+        v-model="playlistId"
+      )
+    .block.block-margin-bottom
+      span.title Extras
+      ui-textbox(
+        icon="last_page"
+        placeholder="Prefix"
+        v-model="prefix"
+      )
+      ui-textbox(
+        icon="first_page"
+        placeholder="Suffix"
+        v-model="suffix"
+      )
+    div.block-margin-bottom
+      ui-button(
+        raised
+        :size="large"
+        :loading="loading"
+        color="primary"
+        ref="request"
+        @click="request()"
+      )#request REQUEST
+
+    .block
+      span.title Output
+      ui-textbox(
+        placeholder="[prefix title suffix](url)"
+        :multi-line="true"
+        autosize="true"
+        v-model="playlistString"
+        ref="textarea"
+      )
 </template>
 
 <script>
@@ -33,7 +52,9 @@ module.exports = {
     return {
       playlistURL: "",
       playlistData: [],
-      playlistString: ""
+      playlistString: "",
+      prefix: "",
+      suffix: ""
     };
   },
   computed: {
@@ -45,7 +66,7 @@ module.exports = {
   },
   methods: {
     updateString(title, id, pos, pId) {
-      this.playlistString += `[${title}](https://www.youtube.com/watch?v=${id}&index=${pos}&list=${pId})\n`;
+      this.playlistString += `[${this.prefix}${title}${this.suffix}](https://www.youtube.com/watch?v=${id}&index=${pos}&list=${pId})\n`;
     },
     request() {
       var opts = {
@@ -56,6 +77,8 @@ module.exports = {
 
       // Recursive process loop (get playlist in chunks of 50)
       let process = () => {
+        this.playlistString = "";
+        this.$refs.request.loading = true;
         gapi.client.load("youtube", "v3", () => {
           let req = gapi.client.youtube.playlistItems.list(opts);
           req.execute(res => {
@@ -77,6 +100,7 @@ module.exports = {
               //  https://github.com/JosephusPaye/Keen-UI/issues/303
               setTimeout(() => {
                 this.$refs.textarea.refreshSize();
+                this.$refs.request.loading = false;
               }, 1000);
             }
           });
@@ -91,5 +115,19 @@ module.exports = {
 </script>
 
 <style scoped>
-
+.block {
+  background-color: #eee;
+  padding: 10px 20px;
+}
+.block-margin-bottom {
+  margin-bottom: 20px;
+}
+.title {
+  font-size: 1.5em;
+  line-height: 2em;
+  font-weight: bold;
+}
+#request {
+  width: 100%;
+}
 </style>

@@ -9,10 +9,9 @@ let userID;
 let userData;
 let userOptions;
 let headers;
-const debug = true;
 
 const log = (caller, message) => {
-  if (!debug) return;
+  if (!userOptions.debug.enabled) return;
   const titleStyle = "color: red; font-weight: bold";
   const callerStyle = "color: green; font-weight: bold";
   const messageStyle = "color: black";
@@ -65,8 +64,11 @@ const process = async function() {
 };
 
 const autoArmoire = async function() {
-  if (userData.stats.gp < 100) {
-    log("autoArmoire", `Exiting with GP of ${user.stats.gp}`);
+  let limit = 100;
+  if (userOptions.limits.enabled) limit += userOptions.limits.gold;
+  console.log(limit);
+  if (userData.stats.gp < limit) {
+    log("autoArmoire", `Exiting with GP of ${userData.stats.gp}`);
     return;
   }
   const url = `https://habitica.com/api/v3/user/buy-armoire`;
@@ -84,6 +86,8 @@ const autoArmoire = async function() {
 };
 
 const autoCast = async function() {
+  let limit = userOptions.autoCast.spell.cost;
+  if (userOptions.limits.enabled) limit += userOptions.limits.mana;
   if (userOptions.autoCast.spell.cost > userData.stats.mp) {
     log("autoCast", "Exiting with insufficient mana");
     return;
@@ -170,8 +174,10 @@ const autoFeed = async function() {
 };
 
 const autoGems = async function() {
-  if (userData.stats.gp < 20) {
-    log("autoGems", `Exiting with GP of ${user.stats.gp}`);
+  let limit = 20;
+  if (userOptions.limits.enabled) limit += userOptions.limits.gold;
+  if (userData.stats.gp < limit) {
+    log("autoGems", `Exiting with GP of ${userData.stats.gp}`);
     return;
   }
   const url = `https://habitica.com/api/v3/user/purchase/gems/gem`;
@@ -262,10 +268,14 @@ const randomizePet = async function() {
   return;
 };
 
+/* MAIN PROCESS */
 chrome.storage.sync.get(
   [
     "userID",
     "apiToken",
+    "master",
+    "debug",
+    "limits",
     "autoArmoire",
     "autoCast",
     "autoFeed",
@@ -276,6 +286,8 @@ chrome.storage.sync.get(
     "randomizePet"
   ],
   items => {
+    if (!items.master.enabled) return;
+
     userID = items.userID;
     apiToken = items.apiToken;
     if (userID === undefined || apiToken === undefined) {

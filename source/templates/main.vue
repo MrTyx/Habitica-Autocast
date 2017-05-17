@@ -2,14 +2,14 @@
   #app
     #wrapper
       ui-tabs(type="icon-and-text", raised)
-        ui-tab(title="Auto Actions", icon="history")
-          .block
+        ui-tab(title="Automagic", icon="settings_backup_restore")
+          .block.block-margin-bottom
             option-row(
               icon="sync"
               name="autoLevel"
               v-bind:enabled="autoLevelEnable"
               description="Allocate Stat Points"
-              subtitle="")
+              subtitle="Mixmax me bro. I got dragons to slay.")
             .subblock
               ui-select(
                 icon="control_point"
@@ -17,15 +17,15 @@
                 v-model="autoLevelModel"
                 @change="setAutolevel()")
 
-          .block
+          .block.block-margin-bottom
             option-row(
               name="autoCast"
               v-bind:enabled="autoCastEnable"
               description="Cast Spell"
-              subtitle="")
+              subtitle="I attack the darkness!")
             .subblock
               ui-select(
-                icon="whatsnow"
+                icon="whatshot"
                 :options="spells"
                 type="image"
                 v-model="autoCastSpellModel"
@@ -36,56 +36,92 @@
                 v-model="autoCastTaskModel"
                 @change="setAutocastTask()")
 
-          .block
+          .block.block-margin-bottom
             option-row(
               name="autoGems"
               v-bind:enabled="autoGemsEnable"
               description="Buy Gems"
-              subtitle="")
+              subtitle="Truly, truly outrageous")
 
-          .block
+          .block.block-margin-bottom
             option-row(
               name="autoArmoire"
               v-bind:enabled="autoArmoireEnable"
               description="Buy Enchanted Armoire"
-              subtitle="")
+              subtitle="It's dangerous to go alone! Take this")
 
-          .block
+          .block.block-margin-bottom
             option-row(
               name="autoFeed"
               v-bind:enabled="autoFeedEnable"
               description="Feed Pets"
-              subtitle="")
+              subtitle="Like Pokemon, but worse.")
 
-          .block
+          .block.block-margin-bottom
             option-row(
               name="autoQuest"
               v-bind:enabled="autoQuestEnable"
               description="Start New Quest"
-              subtitle="To be implemented")
+              subtitle="")
 
 
-          .block
+          .block.block-margin-bottom
             option-row(
               name="randomizeMount"
               v-bind:enabled="randomizeMountEnable"
               description="Randomize Mount"
-              subtitle="")
+              subtitle="Why would you want this?")
 
           .block
             option-row(
               name="randomizePet"
               v-bind:enabled="randomizePetEnable"
               description="Randomize Pet"
-              subtitle="")
+              subtitle="Or this?")
 
-          hr
-        ui-tab(title="Youtube Playlist", icon="play_circle_outline")
+        ui-tab(title="Youtube", icon="play_circle_outline")
+          youtube-playerlister
+
+        ui-tab(title="Settings", icon="settings")
+          .block.block-margin-bottom
+            option-row(
+              name="master"
+              v-bind:enabled="masterEnable"
+              description="Master Enable Switch"
+              subtitle="Shut it down!"
+            )
+          .block.block-margin-bottom
+            option-row(
+              name="debug"
+              v-bind:enabled="debugEnable"
+              description="Debug Mode"
+              subtitle="Johnny, I'm dying, I'm dying"
+            )
           .block
-            youtube-playerlister
-          hr
+            option-row(
+              name="limits"
+              v-bind:enabled="limitsEnable"
+              description="Limits"
+              subtitle="Renzokuken indicator?"
+            )
+            ui-textbox(
+              icon="whatshot"
+              type="number"
+              :min="0"
+              placeholder="Minimum Mana"
+              v-model="minimumMana"
+              @change="setMinimumMana"
+            )
+            ui-textbox(
+              icon="attach_money"
+              type="number"
+              :min="0"
+              placeholder="Minimum Gold"
+              v-model="minimumGold"
+              @change="setMinimumGold"
+            )
+
         ui-tab(title="About", icon="help_outline") To be done
-          hr
 </template>
 
 <script>
@@ -102,9 +138,13 @@ export default {
       autoGemsEnable: false,
       autoFeedEnable: false,
       autoQuestEnable: false,
-
       randomizeMountEnable: false,
       randomizePetEnable: false,
+      masterEnable: false,
+      debugEnable: false,
+      limitsEnable: false,
+      minimumGold: 0,
+      minimumMana: 0,
       tasks: [],
       stats: [
         {
@@ -245,6 +285,9 @@ export default {
       [
         "userID",
         "apiToken",
+        "enable",
+        "debug",
+        "limits",
         "autoLevel",
         "autoCast",
         "autoArmoire",
@@ -274,6 +317,25 @@ export default {
               }
             }
           });
+
+        if (items.master === undefined) {
+          items.master = { enabled: true };
+          chrome.storage.sync.set({ master: items.master });
+        }
+
+        if (items.debug === undefined) {
+          items.debug = { enabled: false };
+          chrome.storage.sync.set({ debug: items.debug });
+        }
+
+        if (items.limits === undefined) {
+          items.limits = {
+            enabled: false,
+            gold: 0,
+            mana: 0
+          };
+          chrome.storage.sync.set({ limits: items.limits });
+        }
 
         // Define schema for autoLevel object
         if (items.autoLevel === undefined) {
@@ -307,44 +369,32 @@ export default {
         }
 
         if (items.autoGems === undefined) {
-          items.autoGems = {
-            enabled: false
-          };
+          items.autoGems = { enabled: false };
           chrome.storage.sync.set({ autoGems: items.autoGems });
         }
 
         if (items.autoArmoire === undefined) {
-          items.autoArmoire = {
-            enabled: false
-          };
+          items.autoArmoire = { enabled: false };
           chrome.storage.sync.set({ autoArmoire: items.autoArmoire });
         }
 
         if (items.autoFeed === undefined) {
-          items.autoFeed = {
-            enabled: false
-          };
+          items.autoFeed = { enabled: false };
           chrome.storage.sync.set({ autoFeed: items.autoFeed });
         }
 
         if (items.autoQuest === undefined) {
-          items.autoQuest = {
-            enabled: false
-          };
+          items.autoQuest = { enabled: false };
           chrome.storage.sync.set({ autoQuest: items.autoQuest });
         }
 
         if (items.randomizeMount === undefined) {
-          items.randomizeMount = {
-            enabled: false
-          };
+          items.randomizeMount = { enabled: false };
           chrome.storage.sync.set({ randomizeMount: items.randomizeMount });
         }
 
         if (items.randomizePet === undefined) {
-          items.randomizePet = {
-            enabled: false
-          };
+          items.randomizePet = { enabled: false };
           chrome.storage.sync.set({ randomizePet: items.randomizePet });
         }
 
@@ -357,10 +407,15 @@ export default {
         this.autoQuestEnable = items.autoQuest.enabled;
         this.randomizeMountEnable = items.randomizeMount.enabled;
         this.randomizePetEnable = items.randomizePet.enabled;
+        this.masterEnable = items.master.enabled;
+        this.debugEnable = items.debug.enabled;
+        this.limitsEnable = items.limits.enabled;
 
         // Populate the selects
         this.autoLevelModel = this.stats[items.autoLevel.index];
         this.autoCastSpellModel = this.spells[items.autoCast.spell.index];
+        this.minimumMana = items.limits.mana;
+        this.minimumGold = items.limits.gold;
       }
     );
   },
@@ -402,6 +457,20 @@ export default {
         chrome.storage.sync.set(obj);
       });
       return;
+    },
+    setMinimumMana() {
+      chrome.storage.sync.get("limits", obj => {
+        obj.limits.mana = +this.minimumMana;
+        chrome.storage.sync.set(obj);
+      });
+      return;
+    },
+    setMinimumGold() {
+      chrome.storage.sync.get("limits", obj => {
+        obj.limits.gold = +this.minimumGold;
+        chrome.storage.sync.set(obj);
+      });
+      return;
     }
   }
 };
@@ -414,12 +483,17 @@ export default {
   max-width: 800px;
   margin: 20px auto;
 }
+.title {
+
+}
 .block {
   background-color: #eee;
   padding: 10px 20px;
+}
+.block-margin-bottom {
   margin-bottom: 20px;
 }
 .subblock {
-  margin-left: 50px;
+  /*margin-left: 50px;*/
 }
 </style>
