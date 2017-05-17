@@ -59,8 +59,8 @@
               v-bind:enabled="autoQuestEnable"
               description="Start New Quest"
               subtitle="To be implemented")
-          hr
-        ui-tab(title="Randomizer")
+
+
           .block
             option-row(
               name="randomizeMount"
@@ -74,6 +74,7 @@
               v-bind:enabled="randomizePetEnable"
               description="Randomize Pet"
               subtitle="To be implemented")
+              
           hr
         ui-tab(title="Youtube Playlist")
           .block
