@@ -288,6 +288,7 @@ export default {
         "enable",
         "debug",
         "limits",
+        "logs",
         "autoLevel",
         "autoCast",
         "autoArmoire",
@@ -335,6 +336,11 @@ export default {
             mana: 0
           };
           chrome.storage.sync.set({ limits: items.limits });
+        }
+
+        if (items.logs === undefined) {
+          items.logs = [];
+          chrome.storage.sync.set({ logs: items.logs });
         }
 
         // Define schema for autoLevel object

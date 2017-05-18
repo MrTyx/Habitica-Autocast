@@ -1,4 +1,5 @@
 import * as axios from "axios";
+import ChromePromise from "chrome-promise";
 import regeneratorRuntime from "regenerator-runtime";
 import { foodLookup } from "./variables/foodLookup.js";
 import { petSuffix } from "./variables/petSuffix.js";
@@ -9,8 +10,19 @@ let userID;
 let userData;
 let userOptions;
 let headers;
+const chromep = new ChromePromise();
 
-const log = (caller, message) => {
+const log = async function(message) {
+  return new Promise((resolve, reject) => {
+    chrome.storage.sync.get(["logs"], items => {
+      items.logs.push(message);
+      if (items.logs.length > 50) items.slice(0, 49);
+      chrome.storage.sync.set(items, resolve);
+    });
+  });
+};
+
+const debug = (caller, message) => {
   if (!userOptions.debug.enabled) return;
   const titleStyle = "color: red; font-weight: bold";
   const callerStyle = "color: green; font-weight: bold";
@@ -30,35 +42,35 @@ const log = (caller, message) => {
 
 const process = async function() {
   if (userOptions.autoLevel && userOptions.autoLevel.enabled) {
-    log("process", `autoLevel`);
+    debug("process", `autoLevel`);
     await autoLevel();
   }
   if (userOptions.autoCast && userOptions.autoCast.enabled) {
-    log("process", `autoCast`);
+    debug("process", `autoCast`);
     await autoCast();
   }
   if (userOptions.autoGems && userOptions.autoGems.enabled) {
-    log("process", `autoGems`);
+    debug("process", `autoGems`);
     await autoGems();
   }
   if (userOptions.autoArmoire && userOptions.autoArmoire.enabled) {
-    log("process", `autoArmoire`);
+    debug("process", `autoArmoire`);
     await autoArmoire();
   }
   if (userOptions.autoFeed && userOptions.autoFeed.enabled) {
-    log("process", `autoFeed`);
+    debug("process", `autoFeed`);
     await autoFeed();
   }
   if (userOptions.autoQuest && userOptions.autoQuest.enabled) {
-    log("process", `autoQuest`);
+    debug("process", `autoQuest`);
     await autoQuest();
   }
   if (userOptions.randomizeMount && userOptions.randomizeMount.enabled) {
-    log("process", `randomizeMount`);
+    debug("process", `randomizeMount`);
     await randomizeMount();
   }
   if (userOptions.randomizePet && userOptions.randomizePet.enabled) {
-    log("process", `randomizePet`);
+    debug("process", `randomizePet`);
     await randomizePet();
   }
 };
@@ -66,21 +78,21 @@ const process = async function() {
 const autoArmoire = async function() {
   let limit = 100;
   if (userOptions.limits.enabled) limit += userOptions.limits.gold;
-  console.log(limit);
   if (userData.stats.gp < limit) {
-    log("autoArmoire", `Exiting with GP of ${userData.stats.gp}`);
+    debug("autoArmoire", `Exiting with GP of ${userData.stats.gp}`);
     return;
   }
   const url = `https://habitica.com/api/v3/user/buy-armoire`;
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      log("autoArmoire", "Bought Enchanted Armoire");
+      debug("autoArmoire", "Bought Enchanted Armoire");
+      await log("Bought enchanted armoire");
       userData.stats.gp -= 100;
       await autoArmoire();
     }
   } catch (e) {
-    log("autoArmoire", e.message);
+    debug("autoArmoire", e.message);
   }
   return;
 };
@@ -89,7 +101,7 @@ const autoCast = async function() {
   let limit = userOptions.autoCast.spell.cost;
   if (userOptions.limits.enabled) limit += userOptions.limits.mana;
   if (userOptions.autoCast.spell.cost > userData.stats.mp) {
-    log("autoCast", "Exiting with insufficient mana");
+    debug("autoCast", "Exiting with insufficient mana");
     return;
   }
   let url = `https://habitica.com/api/v3/user/class/cast/${userOptions.autoCast.spell.id}`;
@@ -99,11 +111,12 @@ const autoCast = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      log("autoCast", `Cast ${userOptions.autoCast.spell.name}`);
+      debug("autoCast", `Cast ${userOptions.autoCast.spell.name}`);
+      await log(`Cast ${userOptions.autoCast.spell.name}`);
       await autoCast();
     }
   } catch (e) {
-    log("autoCast", e.message);
+    debug("autoCast", e.message);
   }
   return;
 };
@@ -131,7 +144,6 @@ const autoFeed = async function() {
     if (s !== undefined) petSuffix[s].foods[key] = foods[key];
   });
 
-  // console.log(JSON.stringify(petSuffix, null, 2));
   const feed = async function(food, pet) {
     const url = `https://habitica.com/api/v3/user/feed/${pet}/${food}`;
     const response = await axios.post(url, {}, { headers });
@@ -151,7 +163,8 @@ const autoFeed = async function() {
         try {
           const response = await feed(food, pets[n - 1]);
           if (response.status === 200) {
-            log("autoFeed", `Feed ${food} to ${pets[n - 1]}`);
+            debug("autoFeed", `Feed ${food} to ${pets[n - 1]}`);
+            await log(`Feed ${food} to ${pets[n - 1]}`);
             petSuffix[s].pets[pets[n - 1]] += 5;
             petSuffix[s].foods[food]--;
             if (petSuffix[s].pets[pets[n - 1]] >= 50) {
@@ -161,10 +174,7 @@ const autoFeed = async function() {
             go = !(petSuffix[s].foods[food] <= 0 || pets.length <= 0);
           }
         } catch (e) {
-          log(
-            "autoFeed",
-            `Tried to feed ${food} to ${pets[n - 1]}, got error ${response}`
-          );
+          debug("autoFeed", `${food} to ${pets[n - 1]} got error ${response}`);
           go = false;
         }
       }
@@ -177,45 +187,47 @@ const autoGems = async function() {
   let limit = 20;
   if (userOptions.limits.enabled) limit += userOptions.limits.gold;
   if (userData.stats.gp < limit) {
-    log("autoGems", `Exiting with GP of ${userData.stats.gp}`);
+    debug("autoGems", `Exiting with GP of ${userData.stats.gp}`);
     return;
   }
   const url = `https://habitica.com/api/v3/user/purchase/gems/gem`;
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      log("autoGems", "Bought a gem");
+      debug("autoGems", "Bought a gem");
+      await log("Bought a gem");
       userData.stats.gp -= 20;
       await autoGems();
     }
   } catch (e) {
-    log("autoGems", e.message);
+    debug("autoGems", e.message);
   }
   return;
 };
 
 const autoLevel = async function() {
   if (userData.stats.points === 0) {
-    log("autoLevel", "Exiting with no available stat points");
+    debug("autoLevel", "Exiting with no available stat points");
     return;
   }
   const url = `https://habitica.com/api/v3/user/allocate?stat=${userOptions.autoLevel.id}`;
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      log("autoLevel", `Allocated Stat Point to ${userOptions.autoLevel.name}`);
+      debug("autoLevel", `Allocated a point to ${userOptions.autoLevel.name}`);
+      await log(`Allocated a point to ${userOptions.autoLevel.name}`);
       userData.stats.points--;
       await autoLevel();
     }
   } catch (e) {
-    log("autoLevel", e.message);
+    debug("autoLevel", e.message);
   }
   return;
 };
 
 const autoQuest = async function() {
   if (userData.party.quest.key !== null) {
-    log("autoQuest", "Exiting with active quest");
+    debug("autoQuest", "Exiting with active quest");
     return;
   }
   const quests = userData.items.quests;
@@ -226,10 +238,11 @@ const autoQuest = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      log("autoQuest", `Started quest ${key}`);
+      debug("autoQuest", `Started quest ${key}`);
+      await log(`Started quest ${key}`);
     }
   } catch (e) {
-    log("autoQuest", e.message);
+    debug("autoQuest", e.message);
   }
   return;
 };
@@ -243,10 +256,11 @@ const randomizeMount = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      log("randomizeMount", `Changed mount to ${key}`);
+      debug("randomizeMount", `Changed mount to ${key}`);
+      await log(`Changed mount to ${key}`);
     }
   } catch (e) {
-    log("randomizeMount", e.message);
+    debug("randomizeMount", e.message);
   }
   return;
 };
@@ -260,53 +274,58 @@ const randomizePet = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      log("randomizePet", `Changed pet to ${key}`);
+      debug("randomizePet", `Changed pet to ${key}`);
+      await log(`Changed pet to ${key}`);
     }
   } catch (e) {
-    log("randomizePet", e.message);
+    debug("randomizePet", e.message);
   }
   return;
 };
 
 /* MAIN PROCESS */
-chrome.storage.sync.get(
-  [
-    "userID",
-    "apiToken",
-    "master",
-    "debug",
-    "limits",
-    "autoArmoire",
-    "autoCast",
-    "autoFeed",
-    "autoGems",
-    "autoLevel",
-    "autoQuest",
-    "randomizeMount",
-    "randomizePet"
-  ],
-  items => {
-    if (!items.master.enabled) return;
+const main = async function() {
+  chrome.storage.sync.get(
+    [
+      "userID",
+      "apiToken",
+      "master",
+      "debug",
+      "limits",
+      "autoArmoire",
+      "autoCast",
+      "autoFeed",
+      "autoGems",
+      "autoLevel",
+      "autoQuest",
+      "randomizeMount",
+      "randomizePet"
+    ],
+    async function(items) {
+      if (!items.master.enabled) return;
 
-    userID = items.userID;
-    apiToken = items.apiToken;
-    if (userID === undefined || apiToken === undefined) {
-      log("Main", "Exiting with no User ID and/or API Token");
-      return;
+      userID = items.userID;
+      apiToken = items.apiToken;
+      if (userID === undefined || apiToken === undefined) {
+        debug("main", "Exiting with no User ID and/or API Token");
+        await log("Exiting with no User ID and/or API Token");
+        return;
+      }
+      userOptions = items;
+      headers = {
+        "x-api-user": userID,
+        "x-api-key": apiToken
+      };
+
+      axios
+        .get("https://habitica.com/api/v3/user", { headers })
+        .then(response => {
+          if (response.status === 200) {
+            userData = response.data.data;
+            process();
+          }
+        });
     }
-    userOptions = items;
-    headers = {
-      "x-api-user": userID,
-      "x-api-key": apiToken
-    };
-
-    axios
-      .get("https://habitica.com/api/v3/user", { headers })
-      .then(response => {
-        if (response.status === 200) {
-          userData = response.data.data;
-          process();
-        }
-      });
-  }
-);
+  );
+};
+main();
