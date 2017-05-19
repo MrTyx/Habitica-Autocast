@@ -15,9 +15,12 @@
           type="secondary"
           @click="goToOptions()"
         )
-    table#table
-      tr(v-for="log in logs")
-        td {{ log }}
+    #table
+      table
+        tr(v-for="log in logs")
+          td
+            b {{ log.datetime }}
+            span  {{ log.message }}
 </template>
 
 <script>
@@ -62,15 +65,21 @@ module.exports = {
   height: 300px;
   margin: 20px auto;
 }
+#table {
+
+}
 table {
   width: 100%;
+  height: 400px;
   margin: auto;
+  display: block;
+  overflow-y: scroll;
 }
 tr {
   border-top: 1px solid #C1C3D1;
   border-bottom: 1px solid #C1C3D1;
   color:#666B85;
-  font-size:16px;
+  font-size:1em;
   font-weight:normal;
   text-shadow: 0 1px 1px rgba(256, 256, 256, 0.1);
 }
@@ -81,6 +90,7 @@ td {
   vertical-align:middle;
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
   border-right: 1px solid #C1C3D1;
+  width: 300px;
 }
 
 </style>

@@ -13,9 +13,11 @@ let headers;
 const chromep = new ChromePromise();
 
 const log = async function(message) {
+  const current = new Date();
+  let datetime = `${current.getDate()} ${current.getHours()}:${current.getMinutes() < 10 ? "0" : ""}${current.getMinutes()}`;
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(["logs"], items => {
-      items.logs.push(message);
+      items.logs.push({ datetime, message });
       if (items.logs.length > 50) items.slice(0, 49);
       chrome.storage.sync.set(items, resolve);
     });
