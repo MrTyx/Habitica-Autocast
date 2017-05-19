@@ -13,6 +13,7 @@
     "512": "images/icon512.png"
   },
   "browser_action": {
+    "name": "Show log of automatic actions",
     "default_popup": "popup.html"
   },
   "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'",
