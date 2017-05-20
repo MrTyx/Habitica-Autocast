@@ -4,30 +4,21 @@
       ui-tabs(type="icon-and-text", raised)
         ui-tab(title="Automagic", icon="settings_backup_restore")
           .block.block-margin-bottom
-            option-row(
-              icon="sync"
-              name="autoLevel"
-              v-bind:enabled="autoLevelEnable"
-              description="Allocate Stat Points"
-              subtitle="Mixmax me bro. I got dragons to slay.")
+            option-row(ref="autoLevel", name="autoLevel", desc="Allocate Stat Points", sub="Mixmax me bro. I got dragons to slay.")
             .subblock
               ui-select(
                 icon="control_point"
                 :options="stats"
                 v-model="autoLevelModel"
-                @change="setAutolevel()")
+                @input="setAutolevel()")
 
           .block.block-margin-bottom
-            option-row(
-              name="autoCast"
-              v-bind:enabled="autoCastEnable"
-              description="Cast Spell"
-              subtitle="I attack the darkness!")
+            option-row(ref="autoCast", name="autoCast", desc="Cast Spell", sub="I attack the darkness!")
             .subblock
               ui-select(
                 icon="whatshot"
-                :options="spells"
                 type="image"
+                :options="spells"
                 v-model="autoCastSpellModel"
                 @change="setAutocastSpell()")
               ui-select(
@@ -36,74 +27,22 @@
                 v-model="autoCastTaskModel"
                 @change="setAutocastTask()")
 
-          .block.block-margin-bottom
-            option-row(
-              name="autoGems"
-              v-bind:enabled="autoGemsEnable"
-              description="Buy Gems"
-              subtitle="Truly, truly outrageous")
 
-          .block.block-margin-bottom
-            option-row(
-              name="autoArmoire"
-              v-bind:enabled="autoArmoireEnable"
-              description="Buy Enchanted Armoire"
-              subtitle="It's dangerous to go alone! Take this")
-
-          .block.block-margin-bottom
-            option-row(
-              name="autoFeed"
-              v-bind:enabled="autoFeedEnable"
-              description="Feed Pets"
-              subtitle="Like Pokemon, but worse.")
-
-          .block.block-margin-bottom
-            option-row(
-              name="autoQuest"
-              v-bind:enabled="autoQuestEnable"
-              description="Start New Quest"
-              subtitle="")
-
-
-          .block.block-margin-bottom
-            option-row(
-              name="randomizeMount"
-              v-bind:enabled="randomizeMountEnable"
-              description="Randomize Mount"
-              subtitle="Why would you want this?")
-
-          .block
-            option-row(
-              name="randomizePet"
-              v-bind:enabled="randomizePetEnable"
-              description="Randomize Pet"
-              subtitle="Or this?")
+          option-row(ref="autoGems", name="autoGems", desc="Buy Gems", sub="Truly, truly outrageous").block.block-margin-bottom
+          option-row(ref="autoArmoire", name="autoArmoire", desc="Buy Enchanted Armoire", sub="It's dangerous to go alone! Take this").block.block-margin-bottom
+          option-row(ref="autoFeed", name="autoFeed", desc="Feed Pets", sub="Like Pokemon, but worse.").block.block-margin-bottom
+          option-row(ref="autoQuest", name="autoQuest", desc="Start New Quest", sub="Never give up, never surrender.").block.block-margin-bottom
+          option-row(ref="randomizeMount", name="randomizeMount", desc="Randomize Mount", sub="Why would you want this?").block.block-margin-bottom
+          option-row(ref="randomizePet", name="randomizePet", desc="Randomize Pet", sub="Or this?").block
 
         ui-tab(title="Youtube", icon="play_circle_outline")
           youtube-playerlister
 
         ui-tab(title="Settings", icon="settings")
-          .block.block-margin-bottom
-            option-row(
-              name="master"
-              v-bind:enabled="masterEnable"
-              description="Master Enable Switch"
-              subtitle="Shut it down!"
-            )
-          .block.block-margin-bottom
-            option-row(
-              name="debug"
-              v-bind:enabled="debugEnable"
-              description="Debug Mode"
-              subtitle="Johnny, I'm dying, I'm dying"
-            )
+          option-row(ref="master", name="master", desc="Master Enable Switch", sub="Shut it down!").block.block-margin-bottom
+          option-row(ref="debug", name="debug", desc="Debug Mode", sub="Johnny, I'm dying, I'm dying").block.block-margin-bottom
           .block
-            option-row(
-              name="limits"
-              v-bind:enabled="limitsEnable"
-              description="Limits"
-              subtitle="Renzokuken indicator?"
-            )
+            option-row(ref="limits", name="limits", desc="Limits", sub="Renzokuken indicator?")
             ui-textbox(
               icon="whatshot"
               type="number"
@@ -125,159 +64,21 @@
 </template>
 
 <script>
+import { spells } from "../variables/spells.js";
+import { stats } from "../variables/stats.js";
+
 export default {
   name: "main",
   data() {
     return {
-      autoLevelEnable: false,
       autoLevelModel: {},
-      autoCastEnable: false,
       autoCastSpellModel: {},
       autoCastTaskModel: {},
-      autoArmoireEnable: false,
-      autoGemsEnable: false,
-      autoFeedEnable: false,
-      autoQuestEnable: false,
-      randomizeMountEnable: false,
-      randomizePetEnable: false,
-      masterEnable: false,
-      debugEnable: false,
-      limitsEnable: false,
       minimumGold: 0,
       minimumMana: 0,
       tasks: [],
-      stats: [
-        {
-          value: "str",
-          label: "Strength"
-        },
-        {
-          value: "int",
-          label: "Intelligence"
-        },
-        {
-          value: "per",
-          label: "Perception"
-        },
-        {
-          value: "con",
-          label: "Constitution"
-        }
-      ],
-      spells: [
-        {
-          value: "fireball",
-          label: "Burst of Flames",
-          image: "images/skill_fireball.png",
-          cost: 10,
-          requireID: true
-        },
-        {
-          value: "mpHeal",
-          label: "Ethereal Surge",
-          image: "images/skill_mpHeal.png",
-          cost: 30,
-          requireID: false
-        },
-        {
-          value: "earth",
-          label: "Earthquake",
-          image: "images/skill_earth.png",
-          cost: 35,
-          requireID: false
-        },
-        {
-          value: "frost",
-          label: "Chilling Frost",
-          image: "images/skill_frost.png",
-          cost: 40,
-          requireID: false
-        },
-        {
-          value: "smash",
-          label: "Brutal Smash",
-          image: "images/skill_smash.png",
-          cost: 10,
-          requireID: true
-        },
-        {
-          value: "defensiveStance",
-          label: "Defensive Stance",
-          image: "images/skill_defensiveStance.png",
-          cost: 25,
-          requireID: false
-        },
-        {
-          value: "valorousPresence",
-          label: "Valorous Presence",
-          image: "images/skill_valorousPresence.png",
-          cost: 20,
-          requireID: false
-        },
-        {
-          value: "intimidate",
-          label: "Intimidating Gaze",
-          image: "images/skill_intimidate.png",
-          cost: 15,
-          requireID: false
-        },
-        {
-          value: "pickPocket",
-          label: "Pickpocket",
-          image: "images/skill_pickPocket.png",
-          cost: 10,
-          requireID: true
-        },
-        {
-          value: "backStab",
-          label: "Backstab",
-          image: "images/skill_backStab.png",
-          cost: 15,
-          requireID: true
-        },
-        {
-          value: "toolsOfTrade",
-          label: "Tools of the Trade",
-          image: "images/skill_toolsOfTrade.png",
-          cost: 25,
-          requireID: false
-        },
-        {
-          value: "stealth",
-          label: "Stealth",
-          image: "images/skill_stealth.png",
-          cost: 45,
-          requireID: false
-        },
-        {
-          value: "heal",
-          label: "Healing Light",
-          image: "images/skill_heal.png",
-          cost: 15,
-          requireID: false
-        },
-        {
-          value: "protectAura",
-          label: "Protective Aura",
-          image: "images/skill_protectAura.png",
-          cost: 30,
-          requireID: false
-        },
-        {
-          value: "brightness",
-          label: "Searing Brightness",
-          image: "images/skill_brightness.png",
-          cost: 15,
-          requireID: false
-        },
-        {
-          value: "healAll",
-          label: "Blessing",
-          image: "images/skill_healAll.png",
-          cost: 25,
-          requireID: false
-        }
-      ]
+      stats,
+      spells
     };
   },
   mounted() {
@@ -405,17 +206,17 @@ export default {
         }
 
         // Populate the switches
-        this.autoLevelEnable = items.autoLevel.enabled;
-        this.autoCastEnable = items.autoCast.enabled;
-        this.autoGemsEnable = items.autoGems.enabled;
-        this.autoArmoireEnable = items.autoArmoire.enabled;
-        this.autoFeedEnable = items.autoFeed.enabled;
-        this.autoQuestEnable = items.autoQuest.enabled;
-        this.randomizeMountEnable = items.randomizeMount.enabled;
-        this.randomizePetEnable = items.randomizePet.enabled;
-        this.masterEnable = items.master.enabled;
-        this.debugEnable = items.debug.enabled;
-        this.limitsEnable = items.limits.enabled;
+        this.$refs.autoLevel.set(items.autoLevel.enabled);
+        this.$refs.autoCast.set(items.autoCast.enabled);
+        this.$refs.autoGems.set(items.autoGems.enabled);
+        this.$refs.autoArmoire.set(items.autoArmoire.enabled);
+        this.$refs.autoFeed.set(items.autoFeed.enabled);
+        this.$refs.autoQuest.set(items.autoQuest.enabled);
+        this.$refs.randomizeMount.set(items.randomizeMount.enabled);
+        this.$refs.randomizePet.set(items.randomizePet.enabled);
+        this.$refs.master.set(items.master.enabled);
+        this.$refs.debug.set(items.debug.enabled);
+        this.$refs.limits.set(items.limits.enabled);
 
         // Populate the selects
         this.autoLevelModel = this.stats[items.autoLevel.index];
@@ -430,7 +231,6 @@ export default {
       for (let i = 0; i < this.stats.length; i++) {
         if (this.stats[i].value === this.autoLevelModel.value) {
           chrome.storage.sync.get("autoLevel", obj => {
-            this.autoLevelEnable = obj.autoLevel.enabled;
             obj.autoLevel.index = i;
             obj.autoLevel.id = this.stats[i].value;
             obj.autoLevel.name = this.stats[i].label;
@@ -444,7 +244,6 @@ export default {
       for (let i = 0; i < this.spells.length; i++) {
         if (this.spells[i] === this.autoCastSpellModel) {
           chrome.storage.sync.get("autoCast", obj => {
-            this.autoCastEnable = obj.autoCast.enabled;
             obj.autoCast.spell.index = i;
             obj.autoCast.spell.id = this.spells[i].value;
             obj.autoCast.spell.name = this.spells[i].label;
@@ -457,7 +256,6 @@ export default {
     },
     setAutocastTask() {
       chrome.storage.sync.get("autoCast", obj => {
-        this.autoCastEnable = obj.autoCast.enabled;
         obj.autoCast.task.id = this.autoCastTaskModel.value;
         obj.autoCast.task.name = this.autoCastTaskModel.label;
         chrome.storage.sync.set(obj);

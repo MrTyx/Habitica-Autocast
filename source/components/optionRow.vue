@@ -1,26 +1,33 @@
 <template lang="pug">
   div
-    space.description {{ this.description }}
-    span.subtitle {{ this.subtitle }}
+    space.description {{ this.desc }}
+    span.subtitle {{ this.sub }}
     ui-switch(
-      v-model="this.enabled"
+      v-model="enabled"
       @change="change()"
     )#switch
-
 </template>
 
 <script>
 module.exports = {
-  props: ["name", "enabled", "description", "subtitle"],
+  props: ["name", "desc", "sub"],
+  data() {
+    return {
+      enabled: false
+    };
+  },
   methods: {
     change() {
-      this.enabled = !this.enabled;
       chrome.storage.sync.get(this.name, obj => {
+        obj[this.name].enabled = this.enabled;
         let temp = {};
         temp[this.name] = obj[this.name];
         temp[this.name].enabled = this.enabled;
         chrome.storage.sync.set(temp);
       });
+    },
+    set(value) {
+      this.enabled = value;
     }
   }
 };
