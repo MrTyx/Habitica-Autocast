@@ -12,7 +12,7 @@
     "build:popup": "cross-env NODE_ENV=production browserify -g envify source/popup.js -t babelify | uglifyjs --compress warnings=false --mangle > build/popup.min.js",
     "build": "npm-run-all build:copy build:pug build:app build:content build:popup",
     "predeploy": "rimraf deploy.zip && npm run build",
-    "deploy": "nodezip -c deploy.zip build/"
+    "deploy": "bestzip deploy.zip build/"
   },
   "repository": {
     "type": "git",
@@ -31,12 +31,12 @@
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-preset-es2015": "^6.24.1",
     "babelify": "^7.3.0",
+    "bestzip": "^1.1.4",
     "browserify": "^14.3.0",
     "chrome-promise": "^2.0.3",
     "copyfiles": "^1.2.0",
     "cross-env": "^5.0.0",
     "envify": "^4.0.0",
-    "node-zip": "^1.1.1",
     "npm-run-all": "^4.0.2",
     "pug": "^2.0.0-rc.1",
     "pug-cli": "^1.0.0-alpha6",
