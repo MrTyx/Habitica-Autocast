@@ -120,16 +120,19 @@ export default {
             }
           });
 
+        // DEFINE SCHEMA: Master Enable
         if (items.master === undefined) {
           items.master = { enabled: true };
           chrome.storage.sync.set({ master: items.master });
         }
 
+        // DEFINE SCHEMA: Debug Enable
         if (items.debug === undefined) {
           items.debug = { enabled: false };
           chrome.storage.sync.set({ debug: items.debug });
         }
 
+        // DEFINE SCHEMA: Limits
         if (items.limits === undefined) {
           items.limits = {
             enabled: false,
@@ -139,12 +142,13 @@ export default {
           chrome.storage.sync.set({ limits: items.limits });
         }
 
+        // DEFINE SCHEMA: Log Messages
         if (items.logs === undefined) {
           items.logs = [];
           chrome.storage.sync.set({ logs: items.logs });
         }
 
-        // Define schema for autoLevel object
+        // DEFINE SCHEMA: Auto Level
         if (items.autoLevel === undefined) {
           items.autoLevel = {
             enabled: false,
@@ -155,7 +159,7 @@ export default {
           chrome.storage.sync.set({ autoLevel: items.autoLevel });
         }
 
-        // Define schema for autoCast object
+        // DEFINE SCHEMA: Auto Cast
         if (items.autoCast === undefined) {
           items.autoCast = {
             enabled: false,
@@ -175,31 +179,37 @@ export default {
           chrome.storage.sync.set({ autoCast: items.autoCast });
         }
 
+        // DEFINE SCHEMA: Auto Gems
         if (items.autoGems === undefined) {
           items.autoGems = { enabled: false };
           chrome.storage.sync.set({ autoGems: items.autoGems });
         }
 
+        // DEFINE SCHEMA: Auto Armoire
         if (items.autoArmoire === undefined) {
           items.autoArmoire = { enabled: false };
           chrome.storage.sync.set({ autoArmoire: items.autoArmoire });
         }
 
+        // DEFINE SCHEMA: Auto Feed
         if (items.autoFeed === undefined) {
           items.autoFeed = { enabled: false };
           chrome.storage.sync.set({ autoFeed: items.autoFeed });
         }
 
+        // DEFINE SCHEMA: Auto Quest
         if (items.autoQuest === undefined) {
           items.autoQuest = { enabled: false };
           chrome.storage.sync.set({ autoQuest: items.autoQuest });
         }
 
+        // DEFINE SCHEMA: Randomize Mount
         if (items.randomizeMount === undefined) {
           items.randomizeMount = { enabled: false };
           chrome.storage.sync.set({ randomizeMount: items.randomizeMount });
         }
 
+        // DEFINE SCHEMA: Randomize Pet
         if (items.randomizePet === undefined) {
           items.randomizePet = { enabled: false };
           chrome.storage.sync.set({ randomizePet: items.randomizePet });
