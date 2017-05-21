@@ -60,7 +60,39 @@
               @change="setMinimumGold"
             )
 
-        ui-tab(title="About", icon="help_outline") To be done
+        ui-tab(title="About", icon="help_outline")
+          img(src="../images/icon128.png", style="padding:20px", align="right")
+          .block.block-margin-bottom
+            .heading Automagic
+            .text
+              | These are functions as part of a content script that is injected in your page when
+              |  you browse to Habitica. If you enable debug mode, then open the inspect menu (
+              kbd Ctrl+Shift+I
+              | ), you can see what it is doing. These functions are processed in the order
+              |  listed. So it will try to allocate stat points before casting a spell, etc.
+              |  If it succeeds, it creates a log entry.
+            br
+            .text.
+              The hard limits under settings apply to everything. So if you set the minimum
+              gold to 50, it won't try to buy gems unless your gold is > 70, and it won't
+              try to buy enchanted armoires unless your gold is > 150. Also because of ordering
+              this means that if buying gems puts you below 150, the enchanted armoire
+              function won't fire.
+
+          .block.block-margin-bottom
+            .heading Youtube Playlist
+            .text
+              | I watch a lot of youtube playlist content (OpenCourseWare etc). Ordinarily I processed these with
+              code youtube-dl --get-id --get-title URL
+              | . But I got tired of that manual process and so I wrote this script.
+
+          .block
+            .heading Future Features
+            .text.
+              I intend to add more features as I personally see fit. If you want something,
+              send me an email at camerontyrel@gmail.com or message me on Habitica, my
+              username is MrTyx.
+
 </template>
 
 <script>
@@ -299,6 +331,17 @@ export default {
 }
 .title {
 
+}
+.heading {
+  display: block;
+  font-size: 1.5em;
+  line-height: 2em;
+  font-weight: bold;
+}
+.text {
+  font-size: 1.2em;
+  line-height: 1.2em;
+  text-align: justify;
 }
 .block {
   background-color: #eee;
