@@ -18,7 +18,8 @@ const log = async function(message) {
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(["logs"], items => {
       items.logs.push({ datetime, message });
-      if (items.logs.length > 50) items.slice(0, 49);
+      items.logs.length = items.logs.slice(-20);
+      // if (items.logs.length > 50) items.slice(0, 49);
       chrome.storage.sync.set(items, resolve);
     });
   });
