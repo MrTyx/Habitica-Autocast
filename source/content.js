@@ -17,8 +17,9 @@ const log = async function(message) {
   let datetime = `${current.getDate()} ${current.getHours()}:${current.getMinutes() < 10 ? "0" : ""}${current.getMinutes()}`;
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(["logs"], items => {
+      if (items.logs === undefined) items.logs = [];
       items.logs.push({ datetime, message });
-      items.logs.length = items.logs.slice(-20);
+      if (items.logs.length >= 20) items.logs.length = items.logs.slice(-20);
       // if (items.logs.length > 50) items.slice(0, 49);
       chrome.storage.sync.set(items, resolve);
     });
@@ -153,7 +154,7 @@ const autoFeed = async function() {
     return response;
   };
 
-  Object.keys(petSuffix).forEach(s => {
+  await Object.keys(petSuffix).forEach(s => {
     if (petSuffix[s].pets.length === 0) return;
     if (petSuffix[s].foods.length === 0) return;
 
