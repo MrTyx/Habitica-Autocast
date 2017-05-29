@@ -38,7 +38,7 @@ module.exports = {
         chrome.runtime.openOptionsPage();
       } else {
         // Reasonable fallback.
-        window.open(chrome.runtime.getURL("options.html"));
+        window.open(chrome.runtime.getURL("app.html"));
       }
     }
   },
@@ -62,9 +62,7 @@ module.exports = {
   height: 300px;
   margin: 20px auto;
 }
-#table {
-
-}
+#table { }
 table {
   width: 100%;
   height: 400px;
