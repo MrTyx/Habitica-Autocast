@@ -10,7 +10,7 @@ body {
   margin: 0px;
   height: 100%;
   /*background-color: #670064;*/
-  background: linear-gradient(to bottom, rgba(143,192,169,1) 0%, rgba(104,176,171,1) 100%);
+  background: linear-gradient(to left, rgba(143,192,169,1) 0%, rgba(104,176,171,1) 100%);
 }
 #app {
   height: 100%;
