@@ -1,5 +1,4 @@
 import * as axios from "axios";
-import ChromePromise from "chrome-promise";
 import regeneratorRuntime from "regenerator-runtime";
 import { foodLookup } from "./variables/foodLookup.js";
 import { petSuffix } from "./variables/petSuffix.js";
@@ -10,7 +9,6 @@ let userID;
 let userData;
 let userOptions;
 let headers;
-const chromep = new ChromePromise();
 
 const log = async function(message) {
   const current = new Date();
