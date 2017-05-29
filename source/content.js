@@ -19,8 +19,7 @@ const log = async function(message) {
     chrome.storage.sync.get(["logs"], items => {
       if (items.logs === undefined) items.logs = [];
       items.logs.push({ datetime, message });
-      if (items.logs.length >= 20) items.logs.length = items.logs.slice(-20);
-      // if (items.logs.length > 50) items.slice(0, 49);
+      items.logs = items.logs.slice(-20);
       chrome.storage.sync.set(items, resolve);
     });
   });
