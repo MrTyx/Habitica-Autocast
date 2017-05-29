@@ -13,7 +13,7 @@
                 @input="setAutolevel()")
 
           .block.block-margin-bottom
-            option-row(ref="autoCast", name="autoCast", desc="Cast Spell", sub="I attack the darkness!")
+            option-row(ref="autoCast", name="autoCast", desc="Use Skill", sub="I attack the darkness!")
             .subblock
               ui-select(
                 icon="whatshot"

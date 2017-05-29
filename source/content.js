@@ -112,8 +112,8 @@ const autoCast = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      debug("autoCast", `Cast ${userOptions.autoCast.spell.name}`);
-      await log(`Cast ${userOptions.autoCast.spell.name}`);
+      debug("autoCast", `Used ${userOptions.autoCast.spell.name}`);
+      await log(`Used ${userOptions.autoCast.spell.name}`);
       await autoCast();
     }
   } catch (e) {
