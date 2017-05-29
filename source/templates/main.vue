@@ -67,7 +67,7 @@
             .text
               | These are functions as part of a content script that is injected in your page when
               |  you browse to Habitica. If you enable debug mode, then open the inspect menu (
-              kbd Ctrl+Shift+I
+              kbd  Ctrl+Shift+I
               | ), you can see what it is doing. These functions are processed in the order
               |  listed. So it will try to allocate stat points before casting a spell, etc.
               |  If it succeeds, it creates a log entry.
@@ -83,7 +83,7 @@
             .heading Youtube Playlist
             .text
               | I watch a lot of youtube playlist content (OpenCourseWare etc). Ordinarily I processed these with
-              code youtube-dl --get-id --get-title URL
+              code  youtube-dl --get-id --get-title URL
               | . But I got tired of that manual process and so I wrote this script.
 
           .block
