@@ -9,7 +9,6 @@ html {
 body {
   margin: 0px;
   height: 100%;
-  /*background-color: #670064;*/
   background: linear-gradient(to left, rgba(143,192,169,1) 0%, rgba(104,176,171,1) 100%);
 }
 #app {
@@ -21,24 +20,10 @@ body {
   overflow-y: hidden;
 }
 
-/* THEME COLORS */
-.text-color-primary-light { color: #FAF3DD; }
-.border-color-primary-light { border-color: #FAF3DD; }
-.bg-color-primary-light { background-color: #FAF3DD; }
-
-.text-color-primary-dark { color: #C8D5B9; }
-.border-color-primary-dark { border-color: #C8D5B9; }
-.bg-color-primary-dark { background-color: #C8D5B9; }
-
-.text-color-secondary-light { color: #fe510a }
-.border-color-secondary-light { border-color: #fe510a }
-.bg-color-secondary-light { background-color: #fe510a }
-
-.text-color-secondary-dark { color: #fd2322 }
-.border-color-secondary-dark { border-color: #fd2322 }
-.bg-color-secondary-dark { background-color: #fd2322 }
-
-/* HACK */
+/* HACK
+ * The KeenUI switches clip through the wrapper div for some reason. This is
+ * the workaround. Its hacky but whatever, it works.
+ */
 .ui-switch__thumb {
   z-index: 1;
 }
@@ -47,8 +32,10 @@ body {
 }
 
 /* MATERIAL FONT
-/* fallback */
-/* https://fonts.googleapis.com/icon?family=Material+Icons */
+ * https://fonts.googleapis.com/icon?family=Material+Icons
+ * Rather than make an external request for the font file, we include it in the
+ * extension. This is so we don't have to include the font url in the content-src
+ */
 
 @font-face {
   font-family: 'Material Icons';
