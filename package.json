@@ -1,6 +1,6 @@
 {
   "name": "habitica-magicwand",
-  "version": "1.1",
+  "version": "1.0.0",
   "description": "Habitica Magic Wand is a collection of tools for Habitica to allow a power-user to get more out of the website.",
   "main": "app.js",
   "scripts": {
