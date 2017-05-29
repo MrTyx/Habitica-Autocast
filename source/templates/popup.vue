@@ -35,11 +35,9 @@ module.exports = {
     goToOptions() {
       if (chrome.runtime.openOptionsPage) {
         // New way to open options pages, if supported (Chrome 42+).
-        console.log("a");
         chrome.runtime.openOptionsPage();
       } else {
         // Reasonable fallback.
-        console.log("b");
         window.open(chrome.runtime.getURL("options.html"));
       }
     }
@@ -51,7 +49,6 @@ module.exports = {
         chrome.storage.sync.set(items);
       }
       this.logs = items.logs.reverse();
-      console.log(this.logs, items.logs);
     });
   }
 };

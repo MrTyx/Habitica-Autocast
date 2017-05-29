@@ -329,9 +329,6 @@ export default {
   max-width: 800px;
   margin: 20px auto;
 }
-.title {
-
-}
 .heading {
   display: block;
   font-size: 1.5em;
@@ -350,7 +347,5 @@ export default {
 .block-margin-bottom {
   margin-bottom: 20px;
 }
-.subblock {
-  /*margin-left: 50px;*/
-}
+.subblock { }
 </style>
