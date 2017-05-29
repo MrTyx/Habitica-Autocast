@@ -166,8 +166,8 @@ const autoFeed = async function() {
         try {
           const response = await feed(food, pets[n - 1]);
           if (response.status === 200) {
-            debug("autoFeed", `Feed ${food} to ${pets[n - 1]}`);
-            await log(`Feed ${food} to ${pets[n - 1]}`);
+            debug("autoFeed", `Fed ${food} to ${pets[n - 1]}`);
+            await log(`Fed ${food} to ${pets[n - 1]}`);
             petSuffix[s].pets[pets[n - 1]] += 5;
             petSuffix[s].foods[food]--;
             if (petSuffix[s].pets[pets[n - 1]] >= 50) {
