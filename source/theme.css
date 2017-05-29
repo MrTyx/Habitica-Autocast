@@ -31,6 +31,23 @@ body {
   z-index: 0
 }
 
+/* THEME COLORS */
+.text-color-primary-light { color: #FAF3DD; }
+.border-color-primary-light { border-color: #FAF3DD; }
+.bg-color-primary-light { background-color: #FAF3DD; }
+
+.text-color-primary-dark { color: #C8D5B9; }
+.border-color-primary-dark { border-color: #C8D5B9; }
+.bg-color-primary-dark { background-color: #C8D5B9; }
+
+.text-color-secondary-light { color: #fe510a }
+.border-color-secondary-light { border-color: #fe510a }
+.bg-color-secondary-light { background-color: #fe510a }
+
+.text-color-secondary-dark { color: #fd2322 }
+.border-color-secondary-dark { border-color: #fd2322 }
+.bg-color-secondary-dark { background-color: #fd2322 }
+
 /* MATERIAL FONT
  * https://fonts.googleapis.com/icon?family=Material+Icons
  * Rather than make an external request for the font file, we include it in the

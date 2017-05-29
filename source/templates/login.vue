@@ -55,7 +55,6 @@ export default {
               userID: this.userID,
               apiToken: this.apiToken
             });
-            console.log("YES!");
             window.location.reload();
           },
           error => {
