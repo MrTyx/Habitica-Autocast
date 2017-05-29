@@ -1,16 +1,16 @@
 {
   "name": "habitica-magicwand",
-  "version": "1.0.0",
+  "version": "1.1",
   "description": "Habitica Magic Wand is a collection of tools for Habitica to allow a power-user to get more out of the website.",
   "main": "app.js",
   "scripts": {
     "prebuild": "rimraf build/*",
-    "build:copy": "copyfiles -u 1 source/manifest.json source/images/* source/assets/* source/install.js build",
+    "build:copy": "copyfiles --up 1 source/manifest.json source/images/* source/assets/* source/install.js build",
     "build:pug": "pug source/*.pug --out build/",
-    "build:app": "cross-env NODE_ENV=production browserify -g envify source/app.js -t babelify | uglifyjs --compress warnings=false --mangle > build/app.min.js",
+    "build:app": "cross-env NODE_ENV=production browserify --global-transform=envify --transform babelify source/app.js | uglifyjs --compress warnings=false --mangle > build/app.min.js",
     "build:content": "browserify source/content.js | uglifyjs --mangle > build/content.min.js",
-    "build:popup": "cross-env NODE_ENV=production browserify -g envify source/popup.js -t babelify | uglifyjs --compress warnings=false --mangle > build/popup.min.js",
-    "build": "npm-run-all build:copy build:pug build:app build:content build:popup",
+    "build:popup": "cross-env NODE_ENV=production browserify --global-transform=envify --transform babelify source/popup.js | uglifyjs --compress warnings=false --mangle > build/popup.min.js",
+    "build": "npm-run-all build:copy build:pug build:app build:popup build:content",
     "predeploy": "rimraf deploy.zip && npm run build",
     "deploy": "bestzip deploy.zip build/"
   },
