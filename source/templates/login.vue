@@ -33,8 +33,8 @@ export default {
   name: "login",
   data: function() {
     return {
-      userID: "cbcf8442-3be2-4f36-9331-ba277555c08b",
-      apiToken: "368fd170-8c94-43e3-8c62-89623435908f",
+      userID: "",
+      apiToken: "",
       loading: false,
       showErrorBar: false
     };
