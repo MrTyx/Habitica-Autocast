@@ -4,7 +4,7 @@
       ui-tabs(type="icon-and-text", raised)
         ui-tab(title="Automagic", icon="settings_backup_restore")
           .block.block-margin-bottom
-            option-row(ref="autoLevel", name="autoLevel", desc="Allocate Stat Points", sub="Mixmax me bro. I got dragons to slay.")
+            option-row(ref="autoLevel", name="autoLevel", desc="Allocate Stat Points", sub="Minmax me bro. I got dragons to slay.")
             .subblock
               ui-select(
                 icon="control_point"
@@ -59,6 +59,7 @@
               v-model="minimumGold"
               @change="setMinimumGold"
             )
+            i This is saved when you click off.
 
         ui-tab(title="About", icon="help_outline")
           img(src="../images/icon128.png", style="padding:20px", align="right")
