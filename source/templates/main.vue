@@ -31,7 +31,7 @@
           option-row(ref="autoGems", name="autoGems", desc="Buy Gems", sub="Truly, truly outrageous").block.block-margin-bottom
           option-row(ref="autoArmoire", name="autoArmoire", desc="Buy Enchanted Armoire", sub="It's dangerous to go alone! Take this").block.block-margin-bottom
           option-row(ref="autoFeed", name="autoFeed", desc="Feed Pets", sub="Like Pokemon, but worse.").block.block-margin-bottom
-          option-row(ref="autoQuest", name="autoQuest", desc="Start New Quest", sub="Never give up, never surrender.").block.block-margin-bottom
+          option-row(ref="autoQuest", name="autoQuest", desc="Use Random Quest Scroll", sub="Never give up, never surrender.").block.block-margin-bottom
           option-row(ref="randomizeMount", name="randomizeMount", desc="Randomize Mount", sub="Why would you want this?").block.block-margin-bottom
           option-row(ref="randomizePet", name="randomizePet", desc="Randomize Pet", sub="Or this?").block
 
