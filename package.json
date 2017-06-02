@@ -6,7 +6,7 @@
   "scripts": {
     "prebuild": "rimraf build/*",
     "build:copy": "copyfiles --up 1 source/manifest.json source/images/* source/assets/* source/install.js build",
-    "build:pug": "pug source/*.pug --out build/",
+    "build:pug": "pug source/ --out build/",
     "build:app": "cross-env NODE_ENV=production browserify --global-transform=envify --transform babelify source/app.js | uglifyjs --compress warnings=false --mangle > build/app.min.js",
     "build:content": "browserify source/content.js | uglifyjs --mangle > build/content.min.js",
     "build:popup": "cross-env NODE_ENV=production browserify --global-transform=envify --transform babelify source/popup.js | uglifyjs --compress warnings=false --mangle > build/popup.min.js",
