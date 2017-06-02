@@ -106,12 +106,17 @@ const autoCast = async function() {
     return;
   }
   let url = `https://habitica.com/api/v3/user/class/cast/${userOptions.autoCast.spell.id}`;
-  if (userOptions.autoCast.task.id) {
+  if (userOptions.autoCast.spell.requireID) {
+    if (!userOptions.autoCast.task.id) {
+      debug("autoCast", "No task ID set.")
+      return
+    }
     url = `${url}?targetId=${userOptions.autoCast.task.id}`;
   }
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
+      userData.stats.mp -= userOptions.autoCast.spell.cost;
       debug("autoCast", `Used ${userOptions.autoCast.spell.name}`);
       await log(`Used ${userOptions.autoCast.spell.name}`);
       await autoCast();

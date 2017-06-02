@@ -203,7 +203,8 @@ export default {
             index: 1,
             id: this.spells[1].value,
             name: this.spells[1].label,
-            cost: this.spells[1].cost
+            cost: this.spells[1].cost,
+            requireID: this.spells[1].requireID
           };
           items.autoCast.task = {
             id: "",
@@ -291,6 +292,7 @@ export default {
             obj.autoCast.spell.id = this.spells[i].value;
             obj.autoCast.spell.name = this.spells[i].label;
             obj.autoCast.spell.cost = this.spells[i].cost;
+            obj.autoCast.spell.requireID = this.spells[i].requireID;
             chrome.storage.sync.set(obj);
           });
           return;
