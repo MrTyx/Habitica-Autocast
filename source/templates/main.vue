@@ -26,11 +26,15 @@
                 :options="tasks",
                 v-model="autoCastTaskModel"
                 @change="setAutocastTask()")
+              i Some skills require a target. If it does and you don't select a target, it won't cast. If it doesn't and you do select one, it will still cast.
 
-
-          option-row(ref="autoGems", name="autoGems", desc="Buy Gems", sub="Truly, truly outrageous").block.block-margin-bottom
+          .block.block-margin-bottom
+            option-row(ref="autoGems", name="autoGems", desc="Buy Gems", sub="Truly, truly outrageous")
+            i This won't let you magically buy gems if you aren't a Habitica subscriber.
           option-row(ref="autoArmoire", name="autoArmoire", desc="Buy Enchanted Armoire", sub="It's dangerous to go alone! Take this").block.block-margin-bottom
-          option-row(ref="autoFeed", name="autoFeed", desc="Feed Pets", sub="Like Pokemon, but worse.").block.block-margin-bottom
+          .block.block-margin-bottom
+            option-row(ref="autoFeed", name="autoFeed", desc="Feed Pets", sub="Like Pokemon, but worse.")
+            i This only feeds pets that have food preferences. Pets such as Purple, Floral, Fairy etc won't be feed.
           option-row(ref="autoQuest", name="autoQuest", desc="Use Random Quest Scroll", sub="Never give up, never surrender.").block.block-margin-bottom
           option-row(ref="randomizeMount", name="randomizeMount", desc="Randomize Mount", sub="Why would you want this?").block.block-margin-bottom
           option-row(ref="randomizePet", name="randomizePet", desc="Randomize Pet", sub="Or this?").block
