@@ -129,12 +129,13 @@ const autoCast = async function() {
 
 const autoFeed = async function() {
   let foods = userData.items.food;
+  let pets = userData.items.pets;
   let mounts = Object.keys(userData.items.mounts).filter(
     k => userData.items.mounts[k]
   );
 
-  Object.keys(userData.items.pets)
-    .filter(k => userData.items.pets[k] !== -1)
+  Object.keys(pets)
+    .filter(k => pets[k] !== -1 && pets[k] !== null)
     .filter(k => mounts.indexOf(k) === -1)
     .filter(k => unfeedablePets.indexOf(k) === -1)
     .forEach(k => {
@@ -256,8 +257,7 @@ const autoQuest = async function() {
 const randomizeMount = async function() {
   const mounts = userData.items.mounts;
   const keys = Object.keys(mounts).filter(k => mounts[k]);
-  //http://stackoverflow.com/a/5915122
-  const key = keys[Math.floor(Math.random() * keys.length)];
+  const key = keys[Math.floor(Math.random() * keys.length)]; //http://stackoverflow.com/a/5915122
   const url = `https://habitica.com/api/v3/user/equip/mount/${key}`;
   try {
     const response = await axios.post(url, {}, { headers });
@@ -273,9 +273,10 @@ const randomizeMount = async function() {
 
 const randomizePet = async function() {
   const pets = userData.items.pets;
-  const keys = Object.keys(pets).filter(k => pets[k] !== -1);
-  //http://stackoverflow.com/a/5915122
-  const key = keys[Math.floor(Math.random() * keys.length)];
+  const keys = Object.keys(pets).filter(
+    k => pets[k] !== -1 && pets[k] !== null
+  );
+  const key = keys[Math.floor(Math.random() * keys.length)]; //http://stackoverflow.com/a/5915122
   const url = `https://habitica.com/api/v3/user/equip/pet/${key}`;
   try {
     const response = await axios.post(url, {}, { headers });
