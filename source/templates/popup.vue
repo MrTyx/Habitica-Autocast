@@ -59,7 +59,7 @@ module.exports = {
   display: flex;
   justify-content: center;
   width: 400px;
-  height: 300px;
+  height: 400px;
   margin: 20px auto;
 }
 #table { }
@@ -85,7 +85,7 @@ td {
   vertical-align:middle;
   text-shadow: -1px -1px 1px rgba(0, 0, 0, 0.1);
   border-right: 1px solid #C1C3D1;
-  width: 300px;
+  width: 400px;
 }
 
 </style>
