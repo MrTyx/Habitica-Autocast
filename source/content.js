@@ -12,7 +12,10 @@ let headers;
 
 const log = async function(message) {
   const current = new Date();
-  let datetime = `${current.getDate()} ${current.getHours()}:${current.getMinutes() < 10 ? "0" : ""}${current.getMinutes()}`;
+  let datetime = `${current.getDate()} ${current.getHours()}:${current.getMinutes() <
+    10
+    ? "0"
+    : ""}${current.getMinutes()}`;
   return new Promise((resolve, reject) => {
     chrome.storage.sync.get(["logs"], items => {
       if (items.logs === undefined) items.logs = [];
@@ -105,11 +108,12 @@ const autoCast = async function() {
     debug("autoCast", "Exiting with insufficient mana");
     return;
   }
-  let url = `https://habitica.com/api/v3/user/class/cast/${userOptions.autoCast.spell.id}`;
+  let url = `https://habitica.com/api/v3/user/class/cast/${userOptions.autoCast
+    .spell.id}`;
   if (userOptions.autoCast.spell.requireID) {
     if (!userOptions.autoCast.task.id) {
-      debug("autoCast", "No task ID set.")
-      return
+      debug("autoCast", "No task ID set.");
+      return;
     }
     url = `${url}?targetId=${userOptions.autoCast.task.id}`;
   }
@@ -127,29 +131,62 @@ const autoCast = async function() {
   return;
 };
 
+// Auto Feed Pets
 const autoFeed = async function() {
   let foods = userData.items.food;
   let pets = userData.items.pets;
   let mounts = Object.keys(userData.items.mounts).filter(
+    // Filter all the mounts to where the key-pair is true
+    // If a user has used Key to Kennel, the key-pair will be null
     k => userData.items.mounts[k]
   );
 
+  // We want to build an array that we can process in a loop. So, for each
+  // pet "suffix", get all the pets named Pet-Suffix and the foods that suffix
+  // prefers. Those are stored in variables/foodLookup.js and variables/petSuffix.js
+
+  // First the pets
   Object.keys(pets)
-    .filter(k => pets[k] !== -1 && pets[k] !== null)
-    .filter(k => mounts.indexOf(k) === -1)
-    .filter(k => unfeedablePets.indexOf(k) === -1)
+    .filter(
+      // If a pet is -1 it is unhatched.
+      // If a pet is null, the user has used Key to the Kennels
+      k => pets[k] !== -1 && pets[k] !== null
+    )
+    .filter(
+      // If you have the mount, you can't feed the pet
+      k => mounts.indexOf(k) === -1
+    )
+    .filter(
+      // So, annoyingly grouping by suffix isn't a perfect system because
+      // Habitica has unfeedable pets. Most of these have a suffix that isn't
+      // in our array (eg Wolf-Veteran) and so will be checked in the following
+      // forEach and ignored. But some do (eg Turkey-Base). Hence this solution.
+      // It is not the best.
+      k => unfeedablePets.indexOf(k) === -1
+    )
     .forEach(k => {
-      let i = k.indexOf("-");
-      if (i === -1) return;
-      let suffix = k.substring(i + 1);
+      let i = k.indexOf("-"); // Check for Pet-Suffix format
+      if (i === -1) return; // If it doesn't exist (for some reason), skip
+      let suffix = k.substring(i + 1); // Get everything after the "-"
+
+      // If the suffix doesn't exist in our array, skip it. This will affect
+      // pets such as Wolf-Veteran. Otherwise, it should be good to go.
       if (petSuffix[suffix] === undefined) return;
       petSuffix[suffix].pets[k] = userData.items.pets[k];
     });
 
-  Object.keys(foods).filter(k => foods[k] > 0).forEach(key => {
-    let s = foodLookup[key];
-    if (s !== undefined) petSuffix[s].foods[key] = foods[key];
-  });
+  // After processing the pets, the food is much simpler
+  Object.keys(foods)
+    .filter(
+      // When you use a food, the key-pair still exists at Food: 0
+      k => foods[k] > 0
+    )
+    .forEach(key => {
+      // Just a bit of a sanity check to make sure that the food exists in our
+      // lookup table. This should never fail but it is better to be safe.
+      let s = foodLookup[key];
+      if (s !== undefined) petSuffix[s].foods[key] = foods[key];
+    });
 
   const feed = async function(food, pet) {
     const url = `https://habitica.com/api/v3/user/feed/${pet}/${food}`;
@@ -217,7 +254,8 @@ const autoLevel = async function() {
     debug("autoLevel", "Exiting with no available stat points");
     return;
   }
-  const url = `https://habitica.com/api/v3/user/allocate?stat=${userOptions.autoLevel.id}`;
+  const url = `https://habitica.com/api/v3/user/allocate?stat=${userOptions
+    .autoLevel.id}`;
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
