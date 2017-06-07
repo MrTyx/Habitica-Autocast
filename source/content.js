@@ -1,3 +1,8 @@
+// A note on file length. It would be nice to break each function into its
+// own file but at the time of writing, exporting async function is not working
+// in babel. I would like to fix this in the future but at present, it is what
+// it is.
+
 import * as axios from "axios";
 import regeneratorRuntime from "regenerator-runtime";
 import { foodLookup } from "./variables/foodLookup.js";
