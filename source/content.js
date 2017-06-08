@@ -14,35 +14,51 @@ let userID;
 let userData;
 let userOptions;
 let headers;
+let awaitCache = false;
 
 // Logging each action to chrome storage so they can be used in the popup
-const log = async function(message) {
-  const current = new Date();
+const printLog = async function(message) {
+  const c = new Date();
 
   // We need to do some formatting of the date. Mainly to pad the minutes.
-  let datetime = `${current.getDate()} ${current.getHours()}:${current.getMinutes() <
-    10
+  let datetime = `${c.getDate()} ${c.getHours()}:${c.getMinutes() < 10
     ? "0"
-    : ""}${current.getMinutes()}`;
+    : ""}${c.getMinutes()}`;
 
   // Because setting storage is a asyncronyous, we need to return a promise.
   // And we can only push values to a chrome.storage array by getting that
   // array, pushing the value and then writing it. Unfortunate, but there is
   // no API alternative.
-  return new Promise((resolve, reject) => {
-    chrome.storage.sync.get(["logs"], items => {
-      // Sanity check for if logs are defined. Shouldn't be necessary but...
-      if (items.logs === undefined) items.logs = [];
-      items.logs.push({ datetime, message });
+  chrome.storage.sync.get(["logs"], function(items) {
+    // Sanity check for if logs are defined. Shouldn't be necessary but...
+    if (items.logs === undefined) items.logs = [];
+    items.logs.push({ datetime, message });
+    // We want to limit the log length to something sane.
+    items.logs = items.logs.slice(-50);
 
-      // We want to limit the log length to something sane.
-      items.logs = items.logs.slice(-50);
-
-      // Pass the resolve function to chrome.storage and it will call it when
-      // it is done.
-      chrome.storage.sync.set(items, resolve);
+    chrome.storage.sync.set(items, () => {
+      awaitCache = false;
     });
   });
+  // });
+  return;
+};
+
+// https://stackoverflow.com/questions/951021/what-is-the-javascript-version-of-sleep
+const sleep = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+const log = async function(message) {
+  let awaitDelay = 1000;
+  while (awaitCache) {
+    debug("sleep", `${awaitDelay}ms to log '${message}'`);
+    await sleep(awaitDelay);
+    awaitDelay *= 2;
+  }
+  awaitCache = true;
+  printLog(message);
+  return;
 };
 
 // Debug gives more detailed messages into console.log and is toggled on by the
@@ -100,6 +116,7 @@ const process = async function() {
     debug("process", `randomizePet`);
     await randomizePet();
   }
+  debug("process", "Done.");
 };
 
 // Buy Enchanted Armoires
@@ -117,8 +134,8 @@ const autoArmoire = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      debug("autoArmoire", "Bought Enchanted Armoire");
       await log("Bought enchanted armoire");
+      debug("autoArmoire", "Bought Enchanted Armoire");
 
       // If it succeeds, decrease how much gold we think we have and call again.
       userData.stats.gp -= 100;
@@ -254,8 +271,8 @@ const autoFeed = async function() {
           // Have to use pets[n-1] because we are using array.length
           const response = await feed(food, pets[n - 1]);
           if (response.status === 200) {
-            debug("autoFeed", `Fed ${food} to ${pets[n - 1]}`);
             await log(`Fed ${food} to ${pets[n - 1]}`);
+            debug("autoFeed", `Fed ${food} to ${pets[n - 1]}`);
 
             // Increment the pet's "feedness" by 5. They start at 5 when
             // hatched and at 50 are fully fed into mounts.
@@ -299,8 +316,8 @@ const autoGems = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      debug("autoGems", "Bought a gem");
       await log("Bought a gem");
+      debug("autoGems", "Bought a gem");
 
       // If it succeeds, decrease how much gold we think we have, and call again.
       userData.stats.gp -= 20;
@@ -325,8 +342,8 @@ const autoLevel = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      debug("autoLevel", `Allocated a point to ${userOptions.autoLevel.name}`);
       await log(`Allocated a point to ${userOptions.autoLevel.name}`);
+      debug("autoLevel", `Allocated a point to ${userOptions.autoLevel.name}`);
 
       // If it succeeds, call again. It is rather unlikely that a user has
       // multiple stat points to spend, but they could.
@@ -362,8 +379,8 @@ const autoQuest = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      debug("autoQuest", `Started quest ${key}`);
       await log(`Started quest ${key}`);
+      debug("autoQuest", `Started quest ${key}`);
     }
   } catch (e) {
     debug("autoQuest", e.message);
@@ -387,8 +404,8 @@ const randomizeMount = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      debug("randomizeMount", `Changed mount to ${key}`);
       await log(`Changed mount to ${key}`);
+      debug("randomizeMount", `Changed mount to ${key}`);
     }
   } catch (e) {
     debug("randomizeMount", e.message);
@@ -413,8 +430,8 @@ const randomizePet = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      debug("randomizePet", `Changed pet to ${key}`);
       await log(`Changed pet to ${key}`);
+      debug("randomizePet", `Changed pet to ${key}`);
     }
   } catch (e) {
     debug("randomizePet", e.message);
@@ -448,8 +465,8 @@ const main = async function() {
       userID = items.userID;
       apiToken = items.apiToken;
       if (userID === undefined || apiToken === undefined) {
-        debug("main", "Exiting with no User ID and/or API Token");
         await log("Exiting with no User ID and/or API Token");
+        debug("main", "Exiting with no User ID and/or API Token");
         return;
       }
 
