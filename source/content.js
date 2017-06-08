@@ -188,8 +188,8 @@ const autoFeed = async function() {
   Object.keys(pets)
     .filter(
       // If a pet is -1 it is unhatched.
-      // If a pet is null, the user has used Key to the Kennels
-      k => pets[k] !== -1 && pets[k] !== null
+      // If a pet is 0, the user has used Key to the Kennels
+      k => pets[k] > 0
     )
     .filter(
       // If you have the mount, you can't feed the pet
@@ -402,8 +402,8 @@ const randomizePet = async function() {
   const keys = Object.keys(pets).filter(
     // Pets are stored as "Key: feedness". If you feed a pet all the way to a
     // mount, it will be "Key: -1" and if you use Key to Kennel, it will be
-    // "Key: null". We want to ignore both cases.
-    k => pets[k] !== -1 && pets[k] !== null
+    // "Key: 0". We want to ignore both cases.
+    k => pets[k] > 0
   );
 
   // Pick a random key from our list. http://stackoverflow.com/a/5915122
