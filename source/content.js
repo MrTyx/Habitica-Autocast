@@ -15,6 +15,13 @@ let userData;
 let userOptions;
 let headers;
 let awaitCache = false;
+let count = {
+  armoire: 0,
+  gem: 0,
+  spell: 0,
+  stat: 0,
+  feed: {}
+};
 
 // Logging each action to chrome storage so they can be used in the popup
 const printLog = async function(message) {
@@ -40,7 +47,6 @@ const printLog = async function(message) {
       awaitCache = false;
     });
   });
-  // });
   return;
 };
 
@@ -134,7 +140,8 @@ const autoArmoire = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      await log("Bought enchanted armoire");
+      // await log("Bought enchanted armoire");
+      count.armoire++;
       debug("autoArmoire", "Bought Enchanted Armoire");
 
       // If it succeeds, decrease how much gold we think we have and call again.
@@ -143,6 +150,10 @@ const autoArmoire = async function() {
     }
   } catch (e) {
     debug("autoArmoire", e.message);
+  }
+  if (count.armoire > 0) {
+    await log(`Bought ${count.armoire} enchanted armoire(s).`);
+    count.armoire = 0;
   }
   return;
 };
@@ -156,6 +167,8 @@ const autoCast = async function() {
     debug("autoCast", "Exiting with insufficient mana");
     return;
   }
+
+  // const done = async function() {};
 
   // Unfortunately we have to do manual string concatenation here. At this
   // point in time, axios is having trouble we correctly sending url params.
@@ -175,7 +188,8 @@ const autoCast = async function() {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
       debug("autoCast", `Used ${userOptions.autoCast.spell.name}`);
-      await log(`Used ${userOptions.autoCast.spell.name}`);
+      count.spell++;
+      // await log(`Used ${userOptions.autoCast.spell.name}`);
 
       // If it succeeds, decrease how much mana we think we have and call again.
       userData.stats.mp -= userOptions.autoCast.spell.cost;
@@ -183,6 +197,10 @@ const autoCast = async function() {
     }
   } catch (e) {
     debug("autoCast", e.message);
+  }
+  if (count.spell > 0) {
+    await log(`Used ${userOptions.autoCast.spell.name} ${count.spell} time(s)`);
+    count.spell = 0;
   }
   return;
 };
@@ -269,25 +287,42 @@ const autoFeed = async function() {
       while (go) {
         try {
           // Have to use pets[n-1] because we are using array.length
-          const response = await feed(food, pets[n - 1]);
+          let pet = pets[n - 1];
+          const response = await feed(food, pet);
+
           if (response.status === 200) {
-            await log(`Fed ${food} to ${pets[n - 1]}`);
-            debug("autoFeed", `Fed ${food} to ${pets[n - 1]}`);
+            // await log(`Fed ${food} to ${pet}`);
+            debug("autoFeed", `Fed ${food} to ${pet}`);
+            if (!count.feed[food]) count.feed[food] = {};
+            if (!count.feed[food][pet]) count.feed[food][pet] = 0;
+            console.log(count.feed);
+            count.feed[food][pet]++;
 
             // Increment the pet's "feedness" by 5. They start at 5 when
             // hatched and at 50 are fully fed into mounts.
-            petSuffix[s].pets[pets[n - 1]] += 5;
+            petSuffix[s].pets[pet] += 5;
             petSuffix[s].foods[food]--;
 
             // If the pet is above 50, we have hatched it into a mount, and can
             // remove it from our array of pets to be processed. Also we need
             // to update our pointer.
-            if (petSuffix[s].pets[pets[n - 1]] >= 50) {
+            if (petSuffix[s].pets[pet] >= 50) {
+              if (count.feed[food][pet] > 0) {
+                await log(`Fed ${count.feed[food][pet]} ${food}(s) to ${pet}`);
+                count.feed[food][pet] = 0;
+              }
               pets.pop();
               n--;
+              pet = pets[n - 1];
             }
             // If we are out of pets or out of food, time to stop.
-            go = !(petSuffix[s].foods[food] <= 0 || pets.length <= 0);
+            if (petSuffix[s].foods[food] <= 0 || pets.length <= 0) {
+              if (count.feed[food][pet] > 0) {
+                await log(`Fed ${count.feed[food][pet]} ${food}(s) to ${pet}`);
+                count.feed[food][pet] = 0;
+              }
+              go = false;
+            }
           }
         } catch (e) {
           // We should realistically never reach this catch block but because
@@ -316,8 +351,9 @@ const autoGems = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      await log("Bought a gem");
+      // await log("Bought a gem");
       debug("autoGems", "Bought a gem");
+      count.gem++;
 
       // If it succeeds, decrease how much gold we think we have, and call again.
       userData.stats.gp -= 20;
@@ -325,6 +361,10 @@ const autoGems = async function() {
     }
   } catch (e) {
     debug("autoGems", e.message);
+  }
+  if (count.gem > 0) {
+    await log(count.gem, `Bought ${count.gem} gem(s).`);
+    count.gem = 0;
   }
   return;
 };
@@ -342,8 +382,9 @@ const autoLevel = async function() {
   try {
     const response = await axios.post(url, {}, { headers });
     if (response.status === 200) {
-      await log(`Allocated a point to ${userOptions.autoLevel.name}`);
+      // await log(`Allocated a point to ${userOptions.autoLevel.name}`);
       debug("autoLevel", `Allocated a point to ${userOptions.autoLevel.name}`);
+      count.stat++;
 
       // If it succeeds, call again. It is rather unlikely that a user has
       // multiple stat points to spend, but they could.
@@ -352,6 +393,12 @@ const autoLevel = async function() {
     }
   } catch (e) {
     debug("autoLevel", e.message);
+  }
+  if (count.stat > 0) {
+    await log(
+      `Allocated ${count.stat} point(s) to ${userOptions.autoLevel.name}`
+    );
+    count.stat = 0;
   }
   return;
 };
