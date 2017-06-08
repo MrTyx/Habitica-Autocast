@@ -295,7 +295,6 @@ const autoFeed = async function() {
             debug("autoFeed", `Fed ${food} to ${pet}`);
             if (!count.feed[food]) count.feed[food] = {};
             if (!count.feed[food][pet]) count.feed[food][pet] = 0;
-            console.log(count.feed);
             count.feed[food][pet]++;
 
             // Increment the pet's "feedness" by 5. They start at 5 when
