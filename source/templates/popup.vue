@@ -9,9 +9,14 @@
     )
       div(slot="actions")
         ui-icon-button(
+          color="red"
+          icon="clear"
+          type="secondary"
+          @click="clearLog()"
+          )
+        ui-icon-button(
           color="white"
           icon="settings"
-          size="large"
           type="secondary"
           @click="goToOptions()"
         )
@@ -32,6 +37,10 @@ module.exports = {
     };
   },
   methods: {
+    clearLog() {
+      this.logs = [];
+      chrome.storage.sync.set({ logs: [] });
+    },
     goToOptions() {
       if (chrome.runtime.openOptionsPage) {
         // New way to open options pages, if supported (Chrome 42+).
@@ -44,10 +53,6 @@ module.exports = {
   },
   mounted() {
     chrome.storage.sync.get(["logs"], items => {
-      if (items.logs.length > 20) {
-        items.logs.slice(0, 19);
-        chrome.storage.sync.set(items);
-      }
       this.logs = items.logs.reverse();
     });
   }

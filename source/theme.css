@@ -19,6 +19,9 @@ body {
   width: 400px;
   overflow-y: hidden;
 }
+.ui-toolbar {
+  height: 2.5rem;
+}
 
 /* HACK
  * The KeenUI switches clip through the wrapper div for some reason. This is
