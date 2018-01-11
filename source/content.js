@@ -163,7 +163,7 @@ const autoCast = async function() {
   // We need to know the cost of the spell so we can factor it into the limits.
   let limit = userOptions.autoCast.spell.cost;
   if (userOptions.limits.enabled) limit += userOptions.limits.mana;
-  if (userOptions.autoCast.spell.cost > userData.stats.mp) {
+  if (limit > userData.stats.mp) {
     debug("autoCast", "Exiting with insufficient mana");
     return;
   }
@@ -362,7 +362,7 @@ const autoGems = async function() {
     debug("autoGems", e.message);
   }
   if (count.gem > 0) {
-    await log(count.gem, `Bought ${count.gem} gem(s).`);
+    await log(`Bought ${count.gem} gem(s).`);
     count.gem = 0;
   }
   return;

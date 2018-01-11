@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "Habitica Magic Wand",
-  "version": "1.4",
+  "version": "1.5",
   "description": "A collection of tools for Habitica",
   "icons": {
     "16": "images/icon16.png",
