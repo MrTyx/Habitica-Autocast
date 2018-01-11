@@ -3,7 +3,7 @@
     #wrapper
       #box.border-color-primary-dark.bg-color-primary-light
         h2 Get your UserID and Api Token from&nbsp;
-          a(href="https://habitica.com/#/options/settings/api", target="_blank") here
+          a(href="https://habitica.com/user/settings/api", target="_blank") here
         ui-textbox(
           label="User ID",
           :invalid="userID.length > 36",
